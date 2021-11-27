@@ -2,10 +2,27 @@
 //
 
 #include <iostream>
+#include "board.h"
+#include "Position.h"
+using namespace std;
 
 int main()
 {
-    std::cout << "Hello World!\n";
+    board b = board();
+    //cout << b.toString();
+
+    Position depart = Position(b.trous1, b.trous2, false);
+    cout << depart.toString();
+
+    cout << "\n\n\n\n";
+
+    Position nextPos;
+
+    nextPos = depart.nexPos(3);
+
+    cout << nextPos.toString();
+
+    cout << "\n\n\n\n";
 
 
 }
