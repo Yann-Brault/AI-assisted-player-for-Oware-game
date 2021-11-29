@@ -19,6 +19,15 @@ public class Position {
     }
 
 
+    public boolean coupValide(int i ){
+        if(iaTurn){
+            return caseOrdi[i] != 0;
+        }
+        else{
+            return caseJoueur[i] != 0;
+        }
+    }
+
     public Position getNextPos(int trou) {
         int pions = 0;
         int[] copyplaying;
@@ -48,15 +57,13 @@ public class Position {
 
             if (nb_graine > 0) {
                 index = 0;
-
-                System.out.println(nb_graine);
                 for (int i = 0; i < size; i++) {
 
                     if (nb_graine > 0) {
                         copyplayed[i]++;
                         nb_graine--;
-                        if (i > 0) {
-                            index++;// nous ne devons aps incrementer l'index pour coller aux index de tableaux
+                        if(i > 0){
+                        index++;// nous ne devons aps incrementer l'index pour coller aux index de tableaux
                         }
 
                     } else {
@@ -80,13 +87,25 @@ public class Position {
         if (iaTurn) {
             return new Position(copyplayed, copyplaying, false, getPionsPrisJoueur(), pions);
         } else {
-            return new Position(copyplaying, copyplayed, true, pions, getPionsPrisOrdi());
+            return new Position(copyplaying, copyplayed, true,  pions,getPionsPrisOrdi());
         }
 
 
         //  return new Position(caseJoueur,caseOrdi,iaTurn,getPionsPrisJoueur(),getPionsPrisOrdi());
 
 
+    }
+
+    public Position[] getsNextPositions(){
+        Position[] res = new Position[size];
+        for(int i = 0 ; i < size ; i++){
+            res[i] = getNextPos(i);
+        }
+        return res;
+    }
+
+    public boolean IsFinalPosition(){
+        return Arrays.stream(caseOrdi).sum() == 0 || Arrays.stream(caseJoueur).sum() == 0;
     }
 
 

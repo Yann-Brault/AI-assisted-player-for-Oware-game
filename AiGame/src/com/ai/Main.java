@@ -1,9 +1,8 @@
 package com.ai;
 
+import com.ai.ai.Ai;
 import com.ai.game.Board;
 import com.ai.game.Position;
-
-import java.util.Arrays;
 
 public class Main {
 
