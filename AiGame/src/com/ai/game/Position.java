@@ -55,14 +55,14 @@ public class Position {
                     if (nb_graine > 0) {
                         copyplayed[i]++;
                         nb_graine--;
-                        if(i > 0){
-                        index++;// nous ne devons aps incrementer l'index pour coller aux index de tableaux
+                        if (i > 0) {
+                            index++;// nous ne devons aps incrementer l'index pour coller aux index de tableaux
                         }
 
                     } else {
                         break;
                     }
-                   }
+                }
                 ops = true; // nous dis si l'index se trouve chez l'opposant ou chez nous.
             }
 
@@ -78,9 +78,9 @@ public class Position {
             }
         }
         if (iaTurn) {
-            return new Position(copyplayed, copyplaying, !iaTurn, getPionsPrisJoueur(), pions);
+            return new Position(copyplayed, copyplaying, false, getPionsPrisJoueur(), pions);
         } else {
-            return new Position(copyplaying, copyplayed, !iaTurn,  pions,getPionsPrisOrdi());
+            return new Position(copyplaying, copyplayed, true, pions, getPionsPrisOrdi());
         }
 
 
@@ -146,9 +146,7 @@ public class Position {
             sb.append(caseOrdi[i]).append(" | ");
         }
         sb.append("\n");
-        for (int i = 0; i <= size * 4; i++) {
-            sb.append("-");
-        }
+        sb.append("-".repeat(size * 4 + 1));
         sb.append("\n");
         sb.append("| ");
         for (int i = 0; i < size; i++) {
