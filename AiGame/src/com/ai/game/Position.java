@@ -111,6 +111,15 @@ public class Position {
         return getPionsPrisOrdi() == 25 || getPionsPrisJoueur() == 25 || Arrays.stream(caseOrdi).sum() == 0 || Arrays.stream(caseJoueur).sum() == 0;
     }
 
+    public int nbcoupValide(){
+        int acc = 0;
+            for(int i = 0 ; i < size; i++){
+                if(coupValide(i)){
+                    acc++;
+                }
+            }
+            return acc;
+    }
 
     public int[] getCaseJoueur() {
         return caseJoueur;

@@ -3,9 +3,6 @@ package com.ai.ai;
 import com.ai.game.Board;
 import com.ai.game.Position;
 
-import java.util.Arrays;
-import java.util.Random;
-
 public class Ai {
     private int score;
 
@@ -13,10 +10,15 @@ public class Ai {
     public Ai(){
     }
 
-    public int evatualte(Position posCourante, boolean iaTurn, int Profondeur) {
+    public int evaluate(Position posCourante, boolean iaTurn, int Profondeur) {
 //        System.out.println("hello " +(posCourante.getPionsPrisOrdi() - posCourante.getPionsPrisJoueur()) );
-        return posCourante.getPionsPrisOrdi() - posCourante.getPionsPrisJoueur();
-
+//        return posCourante.getPionsPrisOrdi() - posCourante.getPionsPrisJoueur();
+            if(iaTurn){
+                return posCourante.getPionsPrisOrdi();
+            }
+            else{
+                return posCourante.getPionsPrisJoueur();
+            }
     }
 
     public int valeurMinMax(Position posCourante, boolean iaTurn, int profondeur, int profondeurMax) {
@@ -25,15 +27,15 @@ public class Ai {
 
         if (posCourante.IsFinalPosition()) {
 //            System.out.println("fin de jeu ");
-            int valuation = evatualte(posCourante, iaTurn, profondeur);
-            if (valuation >= 0) {
+            int valuation = evaluate(posCourante, iaTurn, profondeur);
+            if (posCourante.getPionsPrisOrdi() > posCourante.getPionsPrisJoueur()) {
                 return 48;
             } else {
                 return -48;
             }
         }
         if (profondeur == profondeurMax) {
-            return evatualte(posCourante, posCourante.isIaTurn(), profondeur);
+            return evaluate(posCourante, posCourante.isIaTurn(), profondeur);
             // dans un premier temps l'évaluation sera la
             // différence du nb de pions pris
         }
