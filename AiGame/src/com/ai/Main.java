@@ -8,17 +8,12 @@ public class Main {
 
     public static void main(String[] args) {
         Board b = new Board();
-        System.out.println(b);
-        System.out.println();
-        Position p = b.getactualPosition();
-        Ai ai = new Ai();
-        System.out.println(ai.valeurMinMax(p,p.isIaTurn(),0,2));
-        Position newpos =p.getNextPos(3);
-        System.out.println(ai.evatualte(newpos, newpos.isIaTurn(), 0));
-
-
-//        System.out.println(ai.valeurMinMax(p,p.isIaTurn(),0,10));
-
+        while (b.getPionsPrisOrdi() != 25 || b.getPionsPrisJoueur() != 25) {
+            b.play();
+            System.out.println(b);
+            System.out.printf("ai score : %d\n", b.getPionsPrisOrdi());
+            System.out.printf("player score : %d\n", b.getPionsPrisJoueur());
+        }
 
     }
 }

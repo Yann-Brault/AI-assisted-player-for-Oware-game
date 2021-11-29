@@ -69,7 +69,7 @@ public class Position {
                     } else {
                         break;
                     }
-                   }
+                }
                 ops = true; // nous dis si l'index se trouve chez l'opposant ou chez nous.
             }
 
