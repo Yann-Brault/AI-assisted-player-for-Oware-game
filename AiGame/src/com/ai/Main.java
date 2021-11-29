@@ -1,5 +1,6 @@
 package com.ai;
 
+import com.ai.ai.Ai;
 import com.ai.game.Board;
 import com.ai.game.Position;
 
@@ -10,10 +11,13 @@ public class Main {
         System.out.println(b);
         System.out.println();
         Position p = b.getactualPosition();
-        System.out.println(p.toString());
-        System.out.println();
-        Position p2 = p.getNextPos(3);
-        System.out.println(p2);
+        Ai ai = new Ai();
+        System.out.println(ai.valeurMinMax(p,p.isIaTurn(),0,2));
+        Position newpos =p.getNextPos(3);
+        System.out.println(ai.evatualte(newpos, newpos.isIaTurn(), 0));
+
+
+//        System.out.println(ai.valeurMinMax(p,p.isIaTurn(),0,10));
 
 
     }

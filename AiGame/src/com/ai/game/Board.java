@@ -5,8 +5,8 @@ import java.util.Arrays;
 public class Board {
     private final static int size = 6;
     private final static int initialGraine = 4;
-    private final int[] caseJoueur = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine};
-    private final int[] caseOrdi = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine};
+    private final int[] caseJoueur = new int[]{1, 1, 1, initialGraine, initialGraine, initialGraine};
+    private final int[] caseOrdi = new int[]{initialGraine, initialGraine, initialGraine, 5, initialGraine, initialGraine};
     private boolean iaTurn = true;
     private int PionsPrisJoueur; //pions pris par le joueur
     private int PionsPrisOrdi; // pions pris par l'ordi
@@ -23,7 +23,7 @@ public class Board {
         return caseOrdi;
     }
 
-    public int getSize() {
+    public static int getSize() {
         return size;
     }
 
@@ -83,7 +83,7 @@ public class Board {
             sb.append(caseOrdi[i]).append(" | ");
         }
         sb.append("\n");
-        for (int i = 0; i <= size * 4; i++) {sb.append("-"); }
+        sb.append("-".repeat(size * 4 + 1));
         sb.append("\n");
         sb.append("| ");
         for (int i = 0; i < size; i++) {
