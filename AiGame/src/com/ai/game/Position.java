@@ -45,8 +45,9 @@ public class Position {
         copyplaying[trou] = 0;
         int index = trou + 1;
         boolean ops = false;
-
+        int tour = 0 ;
         while (nb_graine > 0) {
+            if(tour > 0){index =0;}
             ops = false;// nous dis si l'index se trouve chez l'opposant ou chez nous.
             for (int i = index; i < size; i++) {
                 if (nb_graine > 0 && i != trou) {
@@ -72,6 +73,7 @@ public class Position {
                 }
                 ops = true; // nous dis si l'index se trouve chez l'opposant ou chez nous.
             }
+            tour ++;
 
         }
         if (ops) {
@@ -85,6 +87,7 @@ public class Position {
             }
         }
         if (iaTurn) {
+
             return new Position(copyplayed, copyplaying, false, getPionsPrisJoueur(), pions);
         } else {
             return new Position(copyplaying, copyplayed, true,  pions,getPionsPrisOrdi());
@@ -105,7 +108,7 @@ public class Position {
     }
 
     public boolean IsFinalPosition(){
-        return Arrays.stream(caseOrdi).sum() == 0 || Arrays.stream(caseJoueur).sum() == 0;
+        return getPionsPrisOrdi() == 25 || getPionsPrisJoueur() == 25 || Arrays.stream(caseOrdi).sum() == 0 || Arrays.stream(caseJoueur).sum() == 0;
     }
 
 
