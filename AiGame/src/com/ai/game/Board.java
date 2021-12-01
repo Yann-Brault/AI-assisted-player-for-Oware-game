@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
+import static java.lang.Math.max;
+
 public class Board {
     private final static int size = 6;
     private final static int initialGraine = 4;
@@ -107,7 +109,7 @@ public class Board {
             long time = System.currentTimeMillis();
             for (int i = 0; i < size; i++) {
                 if (currentPos.coupValide(i)) {
-                    valuesNodes[i] = ai.valeurMinMax(children[i], iaTurn, 0, p);
+                    valuesNodes[i] = max(ai.valeurMinMax(children[i], iaTurn, 0, p),ai.evaluate(children[i],true,0));
                 } else {
                     valuesNodes[i] = -100;
                 }
