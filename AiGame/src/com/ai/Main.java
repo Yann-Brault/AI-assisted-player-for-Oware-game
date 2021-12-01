@@ -7,7 +7,7 @@ import com.ai.game.Position;
 public class Main {
 
     public static void main(String[] args) {
-        Board b = new Board(false);
+        Board b = new Board(true);
         Position depart = b.getactualPosition();
         Ai ai = new Ai();
         //System.out.println(ai.valeurMinMax(depart, depart.isIaTurn(), 0,5));

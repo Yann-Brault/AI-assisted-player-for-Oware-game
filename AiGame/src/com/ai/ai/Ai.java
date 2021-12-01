@@ -9,7 +9,6 @@ public class Ai {
 
     public Ai(){
     }
-
     public int evaluate(Position posCourante, boolean iaTurn, int Profondeur) {
 //        System.out.println("hello " +(posCourante.getPionsPrisOrdi() - posCourante.getPionsPrisJoueur()) );
               return posCourante.getPionsPrisOrdi() - posCourante.getPionsPrisJoueur();
