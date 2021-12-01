@@ -5,7 +5,7 @@ import com.ai.game.Position;
 
 public class Ai {
     private int score;
-
+    public int nbnode = 0;
 
     public Ai(){
     }
@@ -22,6 +22,7 @@ public class Ai {
     }
 
     public int valeurMinMax(Position posCourante, boolean iaTurn, int profondeur, int profondeurMax) {
+        nbnode++;
         int[] tabValeurs = new int[Board.getSize()];
         Position nextPos;
 
@@ -52,7 +53,6 @@ public class Ai {
                 else{
                     tabValeurs[i] = 100;
                 }
-
             }
         }
         int res;

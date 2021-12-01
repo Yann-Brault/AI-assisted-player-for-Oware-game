@@ -108,7 +108,7 @@ public class Position {
     }
 
     public boolean IsFinalPosition(){
-        return getPionsPrisOrdi() == 25 || getPionsPrisJoueur() == 25 || Arrays.stream(caseOrdi).sum() == 0 || Arrays.stream(caseJoueur).sum() == 0;
+        return getPionsPrisOrdi() >= 25 || getPionsPrisJoueur() >= 25 || Arrays.stream(caseOrdi).sum() == 0 || Arrays.stream(caseJoueur).sum() == 0;
     }
 
     public int nbcoupValide(){

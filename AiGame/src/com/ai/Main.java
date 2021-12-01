@@ -20,6 +20,5 @@ public class Main {
             System.out.printf("ai score : %d\n", b.getPionsPrisOrdi());
             System.out.printf("player score : %d\n", b.getPionsPrisJoueur());
         }
-
     }
 }

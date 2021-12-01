@@ -100,9 +100,7 @@ public class Board {
             Position currentPos = this.getactualPosition();
             Position[] children = currentPos.getsNextPositions();
             int[] valuesNodes = new int[size];
-            int p = 10;
-
-
+            int p = 9;
             if(currentPos.nbcoupValide() <= 2){
                 p +=1;
             }
@@ -114,7 +112,8 @@ public class Board {
                     valuesNodes[i] = -100;
                 }
             }
-            System.out.println("l'ia a recherché avec une profondeur de "+p+" coups.");
+            System.out.println("l'ia a recherché avec une profondeur de "+p+" coups parmis "+ai.nbnode+" noeuds.");
+            ai.nbnode = 0;
             System.out.println("en t = " + (System.currentTimeMillis() - time) +"ms");
             System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes));
             int max = -100;
