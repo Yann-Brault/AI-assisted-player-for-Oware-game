@@ -17,6 +17,50 @@ public class Board2 {
         this.iaTurn = iaBegin;
     }
 
+    public int[] getTableauBleu() {
+        return tableauBleu;
+    }
+
+    public int[] getGetTableauRouge() {
+        return getTableauRouge;
+    }
+
+    public boolean isIaTurn() {
+        return iaTurn;
+    }
+
+    public void setIaTurn(boolean iaTurn) {
+        this.iaTurn = iaTurn;
+    }
+
+    public int getPionsPrisJoueur() {
+        return PionsPrisJoueur;
+    }
+
+    public void setPionsPrisJoueur(int pionsPrisJoueur) {
+        PionsPrisJoueur = pionsPrisJoueur;
+    }
+
+    public int getPionsPrisOrdi() {
+        return PionsPrisOrdi;
+    }
+
+    public void setPionsPrisOrdi(int pionsPrisOrdi) {
+        PionsPrisOrdi = pionsPrisOrdi;
+    }
+    public void addPionsPrisJoueur(int pions) {
+        PionsPrisJoueur += pions;
+    }
+
+    public void addPionsPrisOrdi(int pions) {
+        PionsPrisOrdi += pions;
+    }
+
+
+    public Ai getAi() {
+        return ai;
+    }
+
 
 
 
