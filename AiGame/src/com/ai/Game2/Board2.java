@@ -1,12 +1,12 @@
-package com.ai.game;
+package com.ai.Game2;
 
 import com.ai.ai.Ai;
 
 public class Board2 {
-    private final static int size = 16;
-    private final static int initialGraine = 4;
+    private final static int size = 8;
+    private final static int initialGraine = 2;
     private final int[] tableauBleu = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine,initialGraine};
-    private final int[] getTableauRouge = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine,initialGraine};
+    private final int[] tableauRouge = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine,initialGraine};
     private boolean iaTurn;
     private int PionsPrisJoueur; //pions pris par le joueur
     private int PionsPrisOrdi; // pions pris par l'ordi
@@ -21,8 +21,8 @@ public class Board2 {
         return tableauBleu;
     }
 
-    public int[] getGetTableauRouge() {
-        return getTableauRouge;
+    public int[] getTableauRouge() {
+        return tableauRouge;
     }
 
     public boolean isIaTurn() {
@@ -63,5 +63,21 @@ public class Board2 {
 
 
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("| ");
+        for (int i = size - 1; i >= 0; i--) {
+            sb.append(String.format("\033[34m %d",tableauBleu[i])).append(" ").append(String.format("\033[31m %d \033[0m", tableauRouge[i])).append(" | ");
+        }
+        sb.append("\n");
+        sb.append("-".repeat(size * 9+1));
+        sb.append("\n");
+        sb.append("| ");
+        for (int i = 0; i < size; i++) {
+            sb.append(String.format("\033[34m %d",tableauBleu[i])).append(" ").append(String.format("\033[31m %d \033[0m", tableauRouge[i])).append(" | ");
+        }
+        return sb.toString();
+    }
 
 }
