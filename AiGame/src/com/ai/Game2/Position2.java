@@ -47,6 +47,23 @@ public class Position2 {
         return false;
     }
 
+    public Position2[] getNextPositions(int numPlayer) {
+        Position2[] array = new Position2[size];
+        if (numPlayer == 1) {
+            for (int i = 0; i < sizePlayerCase; i++) {
+                array[i] = this.getNextPosition(case_J1[i]-1, true);
+                array[i + sizePlayerCase] = this.getNextPosition(case_J1[i]-1, false);
+            }
+        }
+        else{
+            for (int i = 0; i < sizePlayerCase; i++) {
+                array[i] = this.getNextPosition(case_J2[i]-1, true);
+                array[i + sizePlayerCase] = this.getNextPosition(case_J2[i]-1, false);
+            }
+
+        }
+        return array;
+    }
 
     public boolean coupValideBleu(int i, int numPlayer) {
         if (numPlayer == 1) {
@@ -92,8 +109,8 @@ public class Position2 {
         int empty_J1 = 0;
         int empty_J2 = 0;
         for (int i = 0; i < sizePlayerCase; i++) {
-            empty_J2 += tableauRouge[case_J2[i]-1] + tableauBleu[case_J2[i]-1];
-            empty_J1 += tableauRouge[case_J1[i]-1] + tableauBleu[case_J1[i]-1];
+            empty_J2 += tableauRouge[case_J2[i] - 1] + tableauBleu[case_J2[i] - 1];
+            empty_J1 += tableauRouge[case_J1[i] - 1] + tableauBleu[case_J1[i] - 1];
         }
         int nbGraineRestante = empty_J2 + empty_J1;
         return getPionsPrisOrdi() >= 33 || getPionsPrisJoueur() >= 33 || (getPionsPrisOrdi() == 32 && getPionsPrisJoueur() == 32) || empty_J1 == 0 || empty_J2 == 0 || nbGraineRestante < 8;
@@ -106,58 +123,56 @@ public class Position2 {
         int index = trou + 1 >= size ? 0 : trou + 1; // nos index varie de 0 à 15
 
 
-                if (bleu) {// elle joue du bleu
-                    int nb_graine = copyBoardBlue[trou];
-                    copyBoardBlue[trou] = 0;
-                    while (nb_graine > 0) {
-                        if (index != trou) {
-                            copyBoardBlue[index]++;
-                            nb_graine--;
-                        }
-                        if (nb_graine > 0) {
-                            if (iaJ1) {
-                                if (iaTurn) {
-                                    index = index + 2 >= size ? 1 : index + 2;
-                                } else {
-                                    index = index + 2 >= size ? 0 : index + 2;
-                                }
-                            } else {
-                                if (iaTurn) {
-                                    index = index + 2 >= size ? 0 : index + 2;
-                                } else {
-                                    index = index + 2 >= size ? 1 : index + 2;
-                                }
-                            }
-                        }
-                    }
-
+        if (bleu) {// elle joue du bleu
+            int nb_graine = copyBoardBlue[trou];
+            copyBoardBlue[trou] = 0;
+            while (nb_graine > 0) {
+                if (index != trou) {
+                    copyBoardBlue[index]++;
+                    nb_graine--;
                 }
-                else { // elle joue du rouge
-                    int nb_graine = copyBoardRed[trou];
-                    copyBoardRed[trou] = 0;
-                    while (nb_graine > 0) {
-                        if (index != trou) {
-                            copyBoardRed[index]++;
-                            nb_graine--;
+                if (nb_graine > 0) {
+                    if (iaJ1) {
+                        if (iaTurn) {
+                            index = index + 2 >= size ? 1 : index + 2;
+                        } else {
+                            index = index + 2 >= size ? 0 : index + 2;
                         }
-                        if (nb_graine > 0) {
-                            index = index + 1 >= size ? 0 : index + 1;
-
+                    } else {
+                        if (iaTurn) {
+                            index = index + 2 >= size ? 0 : index + 2;
+                        } else {
+                            index = index + 2 >= size ? 1 : index + 2;
                         }
                     }
                 }
-                while ((copyBoardBlue[index] + copyBoardRed[index]) == 2 || (copyBoardBlue[index] + copyBoardRed[index]) == 3) {
-                    pions += (copyBoardBlue[index] + copyBoardRed[index]);
-                    copyBoardBlue[index] = 0;
-                    copyBoardRed[index] = 0;
-                    index = index - 1 < 0 ? size-1 : index -1;
+            }
+
+        } else { // elle joue du rouge
+            int nb_graine = copyBoardRed[trou];
+            copyBoardRed[trou] = 0;
+            while (nb_graine > 0) {
+                if (index != trou) {
+                    copyBoardRed[index]++;
+                    nb_graine--;
                 }
-            if (iaTurn) {
-                return new Position2(copyBoardBlue,copyBoardRed,false,iaJ1,getPionsPrisJoueur(),pions);
+                if (nb_graine > 0) {
+                    index = index + 1 >= size ? 0 : index + 1;
+
+                }
             }
-            else {
-                return new Position2(copyBoardBlue,copyBoardRed,true,iaJ1,pions,getPionsPrisOrdi());
-            }
+        }
+        while ((copyBoardBlue[index] + copyBoardRed[index]) == 2 || (copyBoardBlue[index] + copyBoardRed[index]) == 3) {
+            pions += (copyBoardBlue[index] + copyBoardRed[index]);
+            copyBoardBlue[index] = 0;
+            copyBoardRed[index] = 0;
+            index = index - 1 < 0 ? size - 1 : index - 1;
+        }
+        if (iaTurn) {
+            return new Position2(copyBoardBlue, copyBoardRed, false, iaJ1, getPionsPrisJoueur(), pions);
+        } else {
+            return new Position2(copyBoardBlue, copyBoardRed, true, iaJ1, pions, getPionsPrisOrdi());
+        }
     }
 
 
@@ -185,16 +200,16 @@ public class Position2 {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("| ");
-        for (int i = 0; i < size/2; i++) {
-            sb.append(String.format("\033[34m b:%d",tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
+        for (int i = 0; i < size / 2; i++) {
+            sb.append(String.format("\033[34m b:%d", tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
         }
 
         sb.append("\n");
-        sb.append("-".repeat(size * 6 +9));
+        sb.append("-".repeat(size * 6 + 9));
         sb.append("\n");
         sb.append("| ");
-        for (int i = size-1; i >= size/2; i--) {
-            sb.append(String.format("\033[34m b:%d",tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
+        for (int i = size - 1; i >= size / 2; i--) {
+            sb.append(String.format("\033[34m b:%d", tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
         }
         return sb.toString();
     }

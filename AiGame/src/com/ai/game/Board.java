@@ -19,7 +19,7 @@ public class Board {
     private final Ai ai;
 
     public Board(boolean iaBegin) {
-        this.ai = new Ai();
+        this.ai = new Ai(0);
         this.iaTurn = iaBegin;
     }
 

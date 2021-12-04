@@ -1,9 +1,12 @@
 package com.ai.Game2;
 
 import com.ai.ai.Ai;
+import com.ai.game.Position;
 
 import java.util.Arrays;
 import java.util.Scanner;
+
+import static java.lang.Math.max;
 
 public class Board2 {
     private final static int size = 16;
@@ -20,9 +23,14 @@ public class Board2 {
     private final Ai ai;
 
     public Board2(boolean iaBegin) {
-        this.ai = new Ai();
+
         this.iaTurn = iaBegin;
         this.iaJ1 = iaBegin;
+        this.ai = new Ai(iaBegin ? 1 : 2);
+    }
+
+    public static int getSize() {
+        return size;
     }
 
     public int[] getTableauBleu() {
@@ -75,96 +83,67 @@ public class Board2 {
     }
 
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(" ".repeat(7));
-        for (int i = 1; i < size / 2 + 1; i++) {
-            sb.append(String.format("%d", i));
-            sb.append(" ".repeat(12));
-        }
-        sb.append("\n");
-        sb.append("| ");
-        for (int i = 0; i < size / 2; i++) {
-            sb.append(String.format("\033[34m b:%d", tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
-        }
-
-        sb.append("\n");
-        sb.append("-".repeat(size * 6 + 9));
-        sb.append("\n");
-        sb.append("| ");
-        for (int i = size - 1; i >= size / 2; i--) {
-            sb.append(String.format("\033[34m b:%d", tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
-        }
-        sb.append("\n");
-        sb.append("      16           15           14            13           12          11           10           9");
-        sb.append("\n");
-        return sb.toString();
-    }
-
     public void play() {
         int seedTaken = 0;
         int holeToStartFrom = 0;
         boolean colorToPlay = false; // false implique de joeur rouge
         int[] playerHoles;
         int[] opponentHoles;
-        if (iaTurn) {
-            Scanner sc = new Scanner(System.in);
-            boolean validInput = false;
-            int i = -1;
-            while (!validInput) {
-                System.out.println("ia choose a hole ?");
-                String str = sc.nextLine();
-                String[] entry = str.split(" ");
-                if (entry.length == 0 || entry.length > 2) { // Si taille entrée non valide on boucle
-                    continue;
+        if (iaTurn) { // choix du trou de l'ia
+            Position2 currentPos = this.getActualPosition();
+            Position2[] children = currentPos.getNextPositions(ai.numPlayer);
+            int[] valuesNodes = new int[size];
+            int p =6;
+            long time = System.currentTimeMillis();
+            for (int i = 0; i < sizePlayerCase; i++) {
+                if (currentPos.coupValideBleu(i, ai.numPlayer)) {
+                    valuesNodes[i] = max(ai.valeurMinMax2(children[i], iaTurn, 0, p), ai.evaluate2(children[i], iaTurn, 0));
+                } else {
+                    valuesNodes[i] = -100;
                 }
-                try {
-                    i = Integer.parseInt(entry[0]);
-                } catch (Exception e) { // on boucle si premier param pas un chiffre
-                    continue;
-                }
+                if (currentPos.coupValideRouge(i, ai.numPlayer)) {
+                    valuesNodes[i + sizePlayerCase] = max(ai.valeurMinMax2(children[i], iaTurn, 0, p), ai.evaluate2(children[i], iaTurn, 0));
 
-                if ((i >= 1 && i <= 16) && (entry[1].equalsIgnoreCase("b") || entry[1].equalsIgnoreCase("r"))) {
-                    colorToPlay = entry[1].equalsIgnoreCase("b"); // la couleur est un bool
-                    int numPlayer;
-                    boolean included = false;
-                    if (iaJ1) {
-                        numPlayer = 1;
-                        if (colorToPlay) {
-
-                            included = this.getActualPosition().coupValideBleu(i, numPlayer);
-                        } else {
-
-                            included = this.getActualPosition().coupValideRouge(i, numPlayer);
-
-                        }
-                        if (!included) {
-                            continue;
-                        }
-                    } else {
-                        numPlayer = 2;
-                        if (colorToPlay) {
-
-                            included = this.getActualPosition().coupValideBleu(i, numPlayer);
-                        } else {
-
-                            included = this.getActualPosition().coupValideRouge(i, numPlayer);
-
-                        }
-                        if (!included) {
-                            continue;
-                        }
-                    }
-                    validInput = true;
-
-                    holeToStartFrom = i - 1; // -1 pour respecter les index
+                } else {
+                    valuesNodes[i + sizePlayerCase] = -100;
                 }
 
             }
-            playerHoles = case_J1;
-            opponentHoles = case_J2;
-        } else {
+            System.out.println("l'ia a recherché avec une profondeur de " + p + " coups parmis " + ai.nbnode + " noeuds.");
+            ai.nbnode = 0;
+            System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
+            System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes));
+            int max = -100;
+            int idxmax = -1;
+            for (int i = 0; i < size; i++) {
+                if (valuesNodes[i] > max) {
+                    max = valuesNodes[i];
+                    idxmax = i;
+                }
+            }
+            if (ai.numPlayer == 1) {
+                if (idxmax >= sizePlayerCase) {
+                    holeToStartFrom = case_J1[idxmax - sizePlayerCase]-1;
+                    colorToPlay = false;
+                }
+                if (idxmax < sizePlayerCase) {
+                    holeToStartFrom = case_J1[idxmax] -1 ;
+                    colorToPlay = true;
+                }
+
+            }
+            else if (ai.numPlayer == 2) {
+                if (idxmax >= sizePlayerCase) {
+                    holeToStartFrom = case_J2[idxmax - sizePlayerCase]-1;
+                    colorToPlay = false;
+                }
+                if (idxmax < sizePlayerCase) {
+                    holeToStartFrom = case_J2[idxmax] -1 ;
+                    colorToPlay = true;
+                }
+
+            }
+        } else {// choix du trou de l'opposant
             Scanner sc = new Scanner(System.in);
             boolean validInput = false;
             int i = -1;
@@ -275,4 +254,34 @@ public class Board2 {
         }
         iaTurn = !iaTurn;
     }
+
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" ".repeat(7));
+        for (int i = 1; i < size / 2 + 1; i++) {
+            sb.append(String.format("%d", i));
+            sb.append(" ".repeat(12));
+        }
+        sb.append("\n");
+        sb.append("| ");
+        for (int i = 0; i < size / 2; i++) {
+            sb.append(String.format("\033[34m b:%d", tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
+        }
+
+        sb.append("\n");
+        sb.append("-".repeat(size * 6 + 9));
+        sb.append("\n");
+        sb.append("| ");
+        for (int i = size - 1; i >= size / 2; i--) {
+            sb.append(String.format("\033[34m b:%d", tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
+        }
+        sb.append("\n");
+        sb.append("      16           15           14            13           12          11           10           9");
+        sb.append("\n");
+        return sb.toString();
+    }
+
+
 }
