@@ -94,14 +94,15 @@ public class Board2 {
             Position2[] children = currentPos.getNextPositions(ai.numPlayer);
             int[] valuesNodes = new int[size];
             int p =6;
+            int[] cases = ai.numPlayer == 1 ? case_J1 : case_J2;
             long time = System.currentTimeMillis();
             for (int i = 0; i < sizePlayerCase; i++) {
-                if (currentPos.coupValideBleu(i, ai.numPlayer)) {
+                if (currentPos.coupValideBleu(cases[i], ai.numPlayer)) {
                     valuesNodes[i] = max(ai.valeurMinMax2(children[i], iaTurn, 0, p), ai.evaluate2(children[i], iaTurn, 0));
                 } else {
                     valuesNodes[i] = -100;
                 }
-                if (currentPos.coupValideRouge(i, ai.numPlayer)) {
+                if (currentPos.coupValideRouge(cases[i], ai.numPlayer)) {
                     valuesNodes[i + sizePlayerCase] = max(ai.valeurMinMax2(children[i], iaTurn, 0, p), ai.evaluate2(children[i], iaTurn, 0));
 
                 } else {
@@ -112,7 +113,7 @@ public class Board2 {
             System.out.println("l'ia a recherché avec une profondeur de " + p + " coups parmis " + ai.nbnode + " noeuds.");
             ai.nbnode = 0;
             System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
-            System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes));
+            System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
             int max = -100;
             int idxmax = -1;
             for (int i = 0; i < size; i++) {
