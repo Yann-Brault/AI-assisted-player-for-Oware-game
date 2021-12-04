@@ -1,5 +1,6 @@
 package com.ai;
 
+import com.ai.Game2.Position2;
 import com.ai.ai.Ai;
 import com.ai.game.Board;
 import com.ai.Game2.Board2;
@@ -16,6 +17,9 @@ public class Main {
 //        System.out.println(p2.getPionsPrisOrdi());
         Board2 b2 = new Board2(true);
         System.out.println(b2);
+        System.out.println();
+        Position2 p2 = b2.getActualPosition().getNextPosition(13,true);
+        System.out.println(p2);
 //        while ( !b.getactualPosition().IsFinalPosition()) {
 //            b.play();
 //            System.out.println(b);

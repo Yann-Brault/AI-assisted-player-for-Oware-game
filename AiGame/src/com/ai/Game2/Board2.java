@@ -5,8 +5,8 @@ import com.ai.ai.Ai;
 public class Board2 {
     private final static int size = 16;
     private final static int initialGraine = 2;
-    private final int[] tableauBleu = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine,initialGraine};
-    private final int[] tableauRouge = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine,initialGraine};
+    private final int[] tableauBleu = new int[]{0, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, 2,0};
+    private final int[] tableauRouge = new int[]{2, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine,initialGraine, initialGraine, 0,2};
     private boolean iaTurn;
     private final boolean iaJ1;
     private int PionsPrisJoueur; //pions pris par le joueur
@@ -19,7 +19,7 @@ public class Board2 {
     public Board2(boolean iaBegin) {
         this.ai = new Ai();
         this.iaTurn = iaBegin;
-        this.iaJ1 = iaBegin;
+        this.iaJ1 = false;
     }
 
     public int[] getTableauBleu() {

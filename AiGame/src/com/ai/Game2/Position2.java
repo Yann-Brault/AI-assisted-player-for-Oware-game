@@ -114,44 +114,143 @@ public class Position2 {
                             copyBoardBlue[index]++;
                             nb_graine--;
                         }
-                        index = index + 2 >= size ? 1 : index + 2;
+                        if (nb_graine > 0) {
+                            index = index + 2 >= size ? 1 : index + 2;
+                        }
                     }
 
-
-                } else { // elle joue du rouge
-
                 }
+                else { // elle joue du rouge
+                    int nb_graine = copyBoardRed[trou];
+                    copyBoardRed[trou] = 0;
+                    while (nb_graine > 0) {
+                        if (index != trou) {
+                            copyBoardRed[index]++;
+                            nb_graine--;
+                        }
+                        if (nb_graine > 0) {
+                            index = index + 1 >= size ? 0 : index + 1;
+                        }
+                    }
+                }
+                while ((copyBoardBlue[index] + copyBoardRed[index]) == 2 || (copyBoardBlue[index] + copyBoardRed[index]) == 3) {
+                    pions += (copyBoardBlue[index] + copyBoardRed[index]);
+                    copyBoardBlue[index] = 0;
+                    copyBoardRed[index] = 0;
+                    index = index - 1 < 0 ? size-1 : index -1;
+                }
+                return new Position2(copyBoardBlue,copyBoardRed,false,true,getPionsPrisJoueur(),pions);
+
             } else { // Ia is J2
                 if (bleu) {// elle joue du bleu
-
-
-                } else { // elle joue du rouge
+                    int nb_graine = copyBoardBlue[trou];
+                    copyBoardBlue[trou] = 0;
+                    while (nb_graine > 0) {
+                        if (index != trou) {
+                            copyBoardBlue[index]++;
+                            nb_graine--;
+                        }
+                        if (nb_graine > 0) {
+                            index = index + 2 >= size ? 0 : index + 2;
+                        }
+                    }
 
                 }
-
+                else { // elle joue du rouge
+                    int nb_graine = copyBoardRed[trou];
+                    copyBoardRed[trou] = 0;
+                    while (nb_graine > 0) {
+                        if (index != trou) {
+                            copyBoardRed[index]++;
+                            nb_graine--;
+                        }
+                        if (nb_graine > 0) {
+                            index = index + 1 >= size ? 0 : index + 1;
+                        }
+                    }
+                }
+                while ((copyBoardBlue[index] + copyBoardRed[index]) == 2 || (copyBoardBlue[index] + copyBoardRed[index]) == 3) {
+                    pions += (copyBoardBlue[index] + copyBoardRed[index]);
+                    copyBoardBlue[index] = 0;
+                    copyBoardRed[index] = 0;
+                    index = index - 1 < 0 ? size-1 : index -1;
+                }
+                return new Position2(copyBoardBlue,copyBoardRed,false,false,getPionsPrisJoueur(),pions);
             }
 
         } else {
             if (!iaJ1) { // le joueur est J1
-
-                if (bleu) {//il  joue du bleu
-
-
-                } else { // il joue du rouge
+                if (bleu) {// elle joue du bleu
+                    int nb_graine = copyBoardBlue[trou];
+                    copyBoardBlue[trou] = 0;
+                    while (nb_graine > 0) {
+                        if (index != trou) {
+                            copyBoardBlue[index]++;
+                            nb_graine--;
+                        }
+                        if (nb_graine > 0) {
+                            index = index + 2 >= size ? 1 : index + 2;
+                        }
+                    }
 
                 }
+                else { // elle joue du rouge
+                    int nb_graine = copyBoardRed[trou];
+                    copyBoardRed[trou] = 0;
+                    while (nb_graine > 0) {
+                        if (index != trou) {
+                            copyBoardRed[index]++;
+                            nb_graine--;
+                        }
+                        if (nb_graine > 0) {
+                            index = index + 1 >= size ? 0 : index + 1;
+                        }
+                    }
+                }
+                while ((copyBoardBlue[index] + copyBoardRed[index]) == 2 || (copyBoardBlue[index] + copyBoardRed[index]) == 3) {
+                    pions += (copyBoardBlue[index] + copyBoardRed[index]);
+                    copyBoardBlue[index] = 0;
+                    copyBoardRed[index] = 0;
+                    index = index - 1 < 0 ? size-1 : index -1;
+                }
+                return new Position2(copyBoardBlue,copyBoardRed,true,true,pions,getPionsPrisOrdi());
             } else { // le joueur est J2
-                if (bleu) {//il  joue du bleu
-
-
-                } else { // il joue du rouge
+                if (bleu) {// elle joue du bleu
+                    int nb_graine = copyBoardBlue[trou];
+                    copyBoardBlue[trou] = 0;
+                    while (nb_graine > 0) {
+                        if (index != trou) {
+                            copyBoardBlue[index]++;
+                            nb_graine--;
+                        }
+                        if (nb_graine > 0) {
+                            index = index + 2 >= size ? 0 : index + 2;
+                        }
+                    }
 
                 }
+                else { // elle joue du rouge
+                    int nb_graine = copyBoardRed[trou];
+                    copyBoardRed[trou] = 0;
+                    while (nb_graine > 0) {
+                        if (index != trou) {
+                            copyBoardRed[index]++;
+                            nb_graine--;
+                        }
+                        if (nb_graine > 0) {
+                            index = index + 1 >= size ? 0 : index + 1;
+                        }
+                    }
+                }
+                while ((copyBoardBlue[index] + copyBoardRed[index]) == 2 || (copyBoardBlue[index] + copyBoardRed[index]) == 3) {
+                    pions += (copyBoardBlue[index] + copyBoardRed[index]);
+                    copyBoardBlue[index] = 0;
+                    copyBoardRed[index] = 0;
+                    index = index - 1 < 0 ? size-1 : index -1;
+                }
+                return new Position2(copyBoardBlue,copyBoardRed,true,false,pions,getPionsPrisOrdi());
             }
         }
-
-
-        return null;
     }
 
 
@@ -179,15 +278,16 @@ public class Position2 {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("| ");
-        for (int i = size - 1; i >= 0; i--) {
-            sb.append(String.format("\033[34m %d", tableauBleu[i])).append(" ").append(String.format("\033[31m %d \033[0m", tableauRouge[i])).append(" | ");
+        for (int i = 0; i < size/2; i++) {
+            sb.append(String.format("\033[34m b:%d",tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
         }
+
         sb.append("\n");
-        sb.append("-".repeat(size * 9 + 1));
+        sb.append("-".repeat(size * 6 +9));
         sb.append("\n");
         sb.append("| ");
-        for (int i = 0; i < size; i++) {
-            sb.append(String.format("\033[34m %d", tableauBleu[i])).append(" ").append(String.format("\033[31m %d \033[0m", tableauRouge[i])).append(" | ");
+        for (int i = size-1; i >= size/2; i--) {
+            sb.append(String.format("\033[34m b:%d",tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
         }
         return sb.toString();
     }
