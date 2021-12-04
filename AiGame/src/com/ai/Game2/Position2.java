@@ -48,18 +48,18 @@ public class Position2 {
     }
 
 
-    public boolean couValideBleu(int i, int numPlayer) {
+    public boolean coupValideBleu(int i, int numPlayer) {
         if (numPlayer == 1) {
-            for (int j = 0; i < sizePlayerCase; i++) {
-                if (i == case_J1[j] && tableauBleu[i] != 0) {
+            for (int j = 0; j < sizePlayerCase; j++) {
+                if (i == case_J1[j] && tableauBleu[i - 1] != 0) { // -1 parce que i varie de 1 à 16
                     return true;
                 }
             }
             return false;
         }
         if (numPlayer == 2) {
-            for (int j = 0; i < sizePlayerCase; i++) {
-                if (i == case_J2[j] && tableauBleu[i] != 0) {
+            for (int j = 0; j < sizePlayerCase; j++) {
+                if (i == case_J2[j] && tableauBleu[i - 1] != 0) {// -1 parce que i varie de 1 à 16
                     return true;
                 }
             }
@@ -70,16 +70,16 @@ public class Position2 {
 
     public boolean coupValideRouge(int i, int numPlayer) {
         if (numPlayer == 1) {
-            for (int j = 0; i < sizePlayerCase; i++) {
-                if (i == case_J1[j] && tableauRouge[i] != 0) {
+            for (int j = 0; j < sizePlayerCase; j++) {
+                if (i == case_J1[j] && tableauRouge[i - 1] != 0) { // -1 parce que i varie de 1 à 16
                     return true;
                 }
             }
             return false;
         }
         if (numPlayer == 2) {
-            for (int j = 0; i < sizePlayerCase; i++) {
-                if (i == case_J2[j] && tableauRouge[i] != 0) {
+            for (int j = 0; j < sizePlayerCase; j++) {
+                if (i == case_J2[j] && tableauRouge[i - 1] != 0) { // -1 parce que i varie de 1 à 16
                     return true;
                 }
             }
@@ -115,10 +115,18 @@ public class Position2 {
                             nb_graine--;
                         }
                         if (nb_graine > 0) {
-                            if(iaJ1){
-                            index = index + 2 >= size ? 1 : index + 2;}
-                            else{
-                                index = index + 2 >= size ? 0 : index + 2;
+                            if (iaJ1) {
+                                if (iaTurn) {
+                                    index = index + 2 >= size ? 1 : index + 2;
+                                } else {
+                                    index = index + 2 >= size ? 0 : index + 2;
+                                }
+                            } else {
+                                if (iaTurn) {
+                                    index = index + 2 >= size ? 0 : index + 2;
+                                } else {
+                                    index = index + 2 >= size ? 1 : index + 2;
+                                }
                             }
                         }
                     }

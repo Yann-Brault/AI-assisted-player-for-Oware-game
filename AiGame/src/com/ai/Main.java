@@ -16,16 +16,16 @@ public class Main {
 //        Position p2 = depart.getNextPos(3);
 //        System.out.println(p2.getPionsPrisOrdi());
         Board2 b2 = new Board2(true);
-        System.out.println(b2);
-        System.out.println();
-        Position2 p2 = b2.getActualPosition().getNextPosition(15,false);
-        System.out.println(p2);
-        System.out.println(p2.isFinalPosition());
-//        while ( !b.getactualPosition().IsFinalPosition()) {
-//            b.play();
-//            System.out.println(b);
-//            System.out.printf("ai score : %d\n", b.getPionsPrisOrdi());
-//            System.out.printf("player score : %d\n", b.getPionsPrisJoueur());
-//        }
+//        System.out.println(b2);
+//        System.out.println();
+//        Position2 p2 = b2.getActualPosition().getNextPosition(15,false);
+//        System.out.println(p2);
+//        System.out.println(p2.isFinalPosition());
+        while ( !b2.getActualPosition().isFinalPosition()) {
+            b2.play();
+            System.out.println(b2);
+            System.out.printf("ai score : %d\n", b2.getPionsPrisOrdi());
+            System.out.printf("player score : %d\n", b2.getPionsPrisJoueur());
+        }
     }
 }
