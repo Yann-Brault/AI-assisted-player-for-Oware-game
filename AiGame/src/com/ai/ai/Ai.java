@@ -54,6 +54,7 @@ public class Ai {
                 }
             }
         }
+
         int res;
 //        System.out.println(" tour IA "+iaTurn+" "+Arrays.toString(tabValeurs));
         if(iaTurn){
