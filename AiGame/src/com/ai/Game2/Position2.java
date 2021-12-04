@@ -88,24 +88,24 @@ public class Position2 {
         return false;
     }
 
-    public boolean IsFinalPosition() { // ne regarde que la fin par les points pour le moment
+    public boolean isFinalPosition() { // ne regarde que la fin par les points pour le moment
         int empty_J1 = 0;
         int empty_J2 = 0;
         for (int i = 0; i < sizePlayerCase; i++) {
-            empty_J2 += tableauRouge[case_J2[i]] + tableauBleu[case_J2[i]];
-            empty_J1 += tableauRouge[case_J1[i]] + tableauBleu[case_J1[i]];
+            empty_J2 += tableauRouge[case_J2[i]-1] + tableauBleu[case_J2[i]-1];
+            empty_J1 += tableauRouge[case_J1[i]-1] + tableauBleu[case_J1[i]-1];
         }
         int nbGraineRestante = empty_J2 + empty_J1;
         return getPionsPrisOrdi() >= 33 || getPionsPrisJoueur() >= 33 || (getPionsPrisOrdi() == 32 && getPionsPrisJoueur() == 32) || empty_J1 == 0 || empty_J2 == 0 || nbGraineRestante < 8;
     }
 
-    public Position2 getNextPosition(int trou, boolean bleu) {// sera toujorus une position valide
+    public Position2 getNextPosition(int trou, boolean bleu) {// sera toujours une position valide l'input varie de 0 à 15 attentions les indices ont 1 de moins que ceux joué par l'input
         int pions = 0;
         int[] copyBoardRed = new int[]{tableauRouge[0], tableauRouge[1], tableauRouge[2], tableauRouge[3], tableauRouge[4], tableauRouge[5], tableauRouge[6], tableauRouge[7], tableauRouge[8], tableauRouge[9], tableauRouge[10], tableauRouge[11], tableauRouge[12], tableauRouge[13], tableauRouge[14], tableauRouge[15]};
         int[] copyBoardBlue = new int[]{tableauBleu[0], tableauBleu[1], tableauBleu[2], tableauBleu[3], tableauBleu[4], tableauBleu[5], tableauBleu[6], tableauBleu[7], tableauBleu[8], tableauBleu[9], tableauBleu[10], tableauBleu[11], tableauBleu[12], tableauBleu[13], tableauBleu[14], tableauBleu[15]};
         int index = trou + 1 >= size ? 0 : trou + 1; // nos index varie de 0 à 15
-        if (iaTurn) {
-            if (iaJ1) {
+
+
                 if (bleu) {// elle joue du bleu
                     int nb_graine = copyBoardBlue[trou];
                     copyBoardBlue[trou] = 0;
@@ -115,7 +115,11 @@ public class Position2 {
                             nb_graine--;
                         }
                         if (nb_graine > 0) {
-                            index = index + 2 >= size ? 1 : index + 2;
+                            if(iaJ1){
+                            index = index + 2 >= size ? 1 : index + 2;}
+                            else{
+                                index = index + 2 >= size ? 0 : index + 2;
+                            }
                         }
                     }
 
@@ -130,6 +134,7 @@ public class Position2 {
                         }
                         if (nb_graine > 0) {
                             index = index + 1 >= size ? 0 : index + 1;
+
                         }
                     }
                 }
@@ -139,118 +144,12 @@ public class Position2 {
                     copyBoardRed[index] = 0;
                     index = index - 1 < 0 ? size-1 : index -1;
                 }
-                return new Position2(copyBoardBlue,copyBoardRed,false,true,getPionsPrisJoueur(),pions);
-
-            } else { // Ia is J2
-                if (bleu) {// elle joue du bleu
-                    int nb_graine = copyBoardBlue[trou];
-                    copyBoardBlue[trou] = 0;
-                    while (nb_graine > 0) {
-                        if (index != trou) {
-                            copyBoardBlue[index]++;
-                            nb_graine--;
-                        }
-                        if (nb_graine > 0) {
-                            index = index + 2 >= size ? 0 : index + 2;
-                        }
-                    }
-
-                }
-                else { // elle joue du rouge
-                    int nb_graine = copyBoardRed[trou];
-                    copyBoardRed[trou] = 0;
-                    while (nb_graine > 0) {
-                        if (index != trou) {
-                            copyBoardRed[index]++;
-                            nb_graine--;
-                        }
-                        if (nb_graine > 0) {
-                            index = index + 1 >= size ? 0 : index + 1;
-                        }
-                    }
-                }
-                while ((copyBoardBlue[index] + copyBoardRed[index]) == 2 || (copyBoardBlue[index] + copyBoardRed[index]) == 3) {
-                    pions += (copyBoardBlue[index] + copyBoardRed[index]);
-                    copyBoardBlue[index] = 0;
-                    copyBoardRed[index] = 0;
-                    index = index - 1 < 0 ? size-1 : index -1;
-                }
-                return new Position2(copyBoardBlue,copyBoardRed,false,false,getPionsPrisJoueur(),pions);
+            if (iaTurn) {
+                return new Position2(copyBoardBlue,copyBoardRed,false,iaJ1,getPionsPrisJoueur(),pions);
             }
-
-        } else {
-            if (!iaJ1) { // le joueur est J1
-                if (bleu) {// elle joue du bleu
-                    int nb_graine = copyBoardBlue[trou];
-                    copyBoardBlue[trou] = 0;
-                    while (nb_graine > 0) {
-                        if (index != trou) {
-                            copyBoardBlue[index]++;
-                            nb_graine--;
-                        }
-                        if (nb_graine > 0) {
-                            index = index + 2 >= size ? 1 : index + 2;
-                        }
-                    }
-
-                }
-                else { // elle joue du rouge
-                    int nb_graine = copyBoardRed[trou];
-                    copyBoardRed[trou] = 0;
-                    while (nb_graine > 0) {
-                        if (index != trou) {
-                            copyBoardRed[index]++;
-                            nb_graine--;
-                        }
-                        if (nb_graine > 0) {
-                            index = index + 1 >= size ? 0 : index + 1;
-                        }
-                    }
-                }
-                while ((copyBoardBlue[index] + copyBoardRed[index]) == 2 || (copyBoardBlue[index] + copyBoardRed[index]) == 3) {
-                    pions += (copyBoardBlue[index] + copyBoardRed[index]);
-                    copyBoardBlue[index] = 0;
-                    copyBoardRed[index] = 0;
-                    index = index - 1 < 0 ? size-1 : index -1;
-                }
-                return new Position2(copyBoardBlue,copyBoardRed,true,true,pions,getPionsPrisOrdi());
-            } else { // le joueur est J2
-                if (bleu) {// elle joue du bleu
-                    int nb_graine = copyBoardBlue[trou];
-                    copyBoardBlue[trou] = 0;
-                    while (nb_graine > 0) {
-                        if (index != trou) {
-                            copyBoardBlue[index]++;
-                            nb_graine--;
-                        }
-                        if (nb_graine > 0) {
-                            index = index + 2 >= size ? 0 : index + 2;
-                        }
-                    }
-
-                }
-                else { // elle joue du rouge
-                    int nb_graine = copyBoardRed[trou];
-                    copyBoardRed[trou] = 0;
-                    while (nb_graine > 0) {
-                        if (index != trou) {
-                            copyBoardRed[index]++;
-                            nb_graine--;
-                        }
-                        if (nb_graine > 0) {
-                            index = index + 1 >= size ? 0 : index + 1;
-                        }
-                    }
-                }
-                while ((copyBoardBlue[index] + copyBoardRed[index]) == 2 || (copyBoardBlue[index] + copyBoardRed[index]) == 3) {
-                    pions += (copyBoardBlue[index] + copyBoardRed[index]);
-                    copyBoardBlue[index] = 0;
-                    copyBoardRed[index] = 0;
-                    index = index - 1 < 0 ? size-1 : index -1;
-                }
-                return new Position2(copyBoardBlue,copyBoardRed,true,false,pions,getPionsPrisOrdi());
+            else {
+                return new Position2(copyBoardBlue,copyBoardRed,true,iaJ1,pions,getPionsPrisOrdi());
             }
-        }
     }
 
 

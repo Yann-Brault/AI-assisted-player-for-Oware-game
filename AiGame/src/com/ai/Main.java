@@ -18,8 +18,9 @@ public class Main {
         Board2 b2 = new Board2(true);
         System.out.println(b2);
         System.out.println();
-        Position2 p2 = b2.getActualPosition().getNextPosition(13,true);
+        Position2 p2 = b2.getActualPosition().getNextPosition(15,false);
         System.out.println(p2);
+        System.out.println(p2.isFinalPosition());
 //        while ( !b.getactualPosition().IsFinalPosition()) {
 //            b.play();
 //            System.out.println(b);
