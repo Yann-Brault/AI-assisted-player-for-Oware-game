@@ -110,7 +110,7 @@ public class Board2 {
                 }
 
             }
-            System.out.println("l'ia a recherché avec une profondeur de " + p + " coups parmis " + ai.nbnode + " noeuds.");
+            System.out.println("l'ia a recherché avec une profondeur de " + (p+1) + " coups parmis " + ai.nbnode + " noeuds.");
             ai.nbnode = 0;
             System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
             System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
@@ -144,6 +144,8 @@ public class Board2 {
                 }
 
             }
+            String s = colorToPlay ? "blue" : "red";
+            System.out.println("l'ia joue "+ (holeToStartFrom +1)  + " " + s);
         } else {// choix du trou de l'opposant
             Scanner sc = new Scanner(System.in);
             boolean validInput = false;

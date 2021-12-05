@@ -9,12 +9,12 @@ import com.ai.game.Position;
 public class Main {
 
     public static void main(String[] args) {
-        Board b = new Board(true);
+        Board b = new Board(false);
         Position depart = b.getactualPosition();
         //System.out.println(ai.valeurMinMax(depart, depart.isIaTurn(), 0,5));
 //        Position p2 = depart.getNextPos(3);
 //        System.out.println(p2.getPionsPrisOrdi());
-        Board2 b2 = new Board2(true);
+        Board2 b2 = new Board2(false);
 //        System.out.println(b2);
 //        System.out.println();
 //        Position2 p2 = b2.getActualPosition().getNextPosition(15,false);
