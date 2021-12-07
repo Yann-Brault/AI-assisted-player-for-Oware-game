@@ -84,6 +84,7 @@ public class Board2 {
 
 
     public void play() {
+        Ai.nbturn ++;
         int seedTaken = 0;
         int holeToStartFrom = 0;
         boolean colorToPlay = false; // false implique de joeur rouge
@@ -93,7 +94,10 @@ public class Board2 {
             Position2 currentPos = this.getActualPosition();
             Position2[] children = currentPos.getNextPositions(ai.numPlayer);
             int[] valuesNodes = new int[size];
-            int p =6;
+            int p = 6;
+            if(Ai.nbturn > 10 ){
+             p =8;}
+
             int[] cases = ai.numPlayer == 1 ? case_J1 : case_J2;
             long time = System.currentTimeMillis();
             for (int i = 0; i < sizePlayerCase; i++) {

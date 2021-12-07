@@ -8,6 +8,7 @@ import com.ai.game.Position;
 public class Ai {
     private int score;
     public int nbnode = 0;
+    public static int nbturn = 0;
     public final int numPlayer;
     private final static int[] case_J1 = new int[]{1, 3, 5, 7, 9, 11, 13, 15};
     private final static int[] case_J2 = new int[]{2, 4, 6, 8, 10, 12, 14, 16};
@@ -27,7 +28,8 @@ public class Ai {
         //  return posCourante.getPionsPrisJoueur();
         //}
     }
-    public int evaluate2(Position2 pos, boolean iaTurn,int Profondeur){
+
+    public int evaluate2(Position2 pos, boolean iaTurn, int Profondeur) {
         return pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur();
     }
 
@@ -89,7 +91,7 @@ public class Ai {
         int[] tabValeurBleu = new int[Board2.getSize()];
         Position2 nextPosBleu;
         Position2 nextPosRouge;
-
+        int num = iaTurn ? numPlayer : (numPlayer == 1 ? 2 : 1);
         if (posCourante.isFinalPosition()) {
 //            System.out.println("fin de jeu ");
             int valuation = 0; // TODO evaluate
@@ -98,16 +100,17 @@ public class Ai {
             } else {
                 return -64;
             }
+
         }
         if (profondeur == profondeurMax) {
-            return evaluate2(posCourante,iaTurn,profondeur);
+            return evaluate2(posCourante, iaTurn, profondeur);
             // dans un premier temps l'évaluation sera la
             // différence du nb de pions pris
         }
 
-        for (int i = 0; i < Board2.getSize(); i++) { //
+        for (int i = 0; i < Board2.getSize(); i++) { // changement de coup valide pour les joueurs fait ?
 
-            if (posCourante.coupValideBleu(i, numPlayer)) {
+            if (posCourante.coupValideBleu(i, num)) {
                 nextPosBleu = posCourante.getNextPosition(i, true); // pos_next devient la position courante, et on change le joueur
                 tabValeurBleu[i] = valeurMinMax2(nextPosBleu, nextPosBleu.isIaTurn(), profondeur + 1, profondeurMax);
             } else {
@@ -118,7 +121,7 @@ public class Ai {
                 }
 
             }
-            if (posCourante.coupValideRouge(i, numPlayer)) {
+            if (posCourante.coupValideRouge(i, num)) {
                 nextPosRouge = posCourante.getNextPosition(i, false);
                 tabValeursRouge[i] = valeurMinMax2(nextPosRouge, nextPosRouge.isIaTurn(), profondeur + 1, profondeurMax);
             } else {
@@ -137,8 +140,7 @@ public class Ai {
             maxBleu = max(tabValeurBleu);
             maxRouge = max(tabValeursRouge);
             res = Math.max(maxBleu, maxRouge);
-        }
-        else {
+        } else {
             maxBleu = min(tabValeurBleu);
             maxRouge = min(tabValeursRouge);
             res = Math.min(maxBleu, maxRouge);
