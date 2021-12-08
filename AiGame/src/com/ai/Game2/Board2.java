@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class Board2 {
     private final static int size = 16;
@@ -95,9 +96,9 @@ public class Board2 {
             Position2[] children = currentPos.getNextPositions(ai.numPlayer);
             int[] valuesNodes = new int[size];
             int p = 6;
-            if(Ai.nbturn > 10 ){
-             p =8;}
-
+            if(currentPos.nbcoupValide(ai.numPlayer) <= 5 ){
+             p =7;
+            }
             int[] cases = ai.numPlayer == 1 ? case_J1 : case_J2;
             long time = System.currentTimeMillis();
             for (int i = 0; i < sizePlayerCase; i++) {
@@ -107,7 +108,7 @@ public class Board2 {
                     valuesNodes[i] = -100;
                 }
                 if (currentPos.coupValideRouge(cases[i], ai.numPlayer)) {
-                    valuesNodes[i + sizePlayerCase] = max(ai.valeurMinMax2(children[i], iaTurn, 0, p), ai.evaluate2(children[i], iaTurn, 0));
+                    valuesNodes[i + sizePlayerCase] =  max(ai.valeurMinMax2(children[i], iaTurn, 0, p), ai.evaluate2(children[i], iaTurn, 0));
 
                 } else {
                     valuesNodes[i + sizePlayerCase] = -100;
@@ -150,7 +151,9 @@ public class Board2 {
             }
             String s = colorToPlay ? "blue" : "red";
             System.out.println("l'ia joue "+ (holeToStartFrom +1)  + " " + s);
-        } else {// choix du trou de l'opposant
+        }
+
+        else {// choix du trou de l'opposant
             Scanner sc = new Scanner(System.in);
             boolean validInput = false;
             int i = -1;

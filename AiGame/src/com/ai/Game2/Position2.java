@@ -27,6 +27,49 @@ public class Position2 {
         PionsPrisOrdi = pionsPrisOrdi;
     }
 
+    public boolean isWinning(){
+        if(this.isFinalPosition()){
+            int numops;
+            if(iaJ1){
+                numops = 2;
+            }
+            else{
+                numops = 1;
+            }
+            if((this.nbcoupValide(numops) == 0) && PionsPrisOrdi > PionsPrisJoueur){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+    public boolean isLoosing(){
+        if(this.isFinalPosition()){
+            int num;
+            if(iaJ1){
+                num = 1;
+            }
+            else{
+                num = 2;
+            }
+            if((this.nbcoupValide(num) == 0) && PionsPrisOrdi < PionsPrisJoueur){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        else{
+            return false;
+        }
+    }
+    public boolean isDraw(){
+        return this.isFinalPosition() && getPionsPrisJoueur() == 33 && getPionsPrisOrdi() == 33 ;
+    }
     public boolean coupValide(int i, int numPlayer) {// pas sûr non plus à vérifier si le coup valide est bien défini
         if (numPlayer == 1) {
             for (int j = 0; i < sizePlayerCase; i++) {
@@ -104,6 +147,22 @@ public class Position2 {
         }
         return false;
     }
+
+
+    public int nbcoupValide(int numPlayer){
+        int acc = 0;
+        int[] casejoueur = numPlayer == 1 ? case_J1 : case_J2;
+        for(int i = 0 ; i < sizePlayerCase; i++){
+            if(coupValideRouge(casejoueur[i],numPlayer)){
+                acc++;
+            }
+            if(coupValideBleu(casejoueur[i],numPlayer)){
+                acc ++;
+            }
+        }
+        return acc;
+    }
+
 
     public boolean isFinalPosition() { // ne regarde que la fin par les points pour le moment
         int empty_J1 = 0;

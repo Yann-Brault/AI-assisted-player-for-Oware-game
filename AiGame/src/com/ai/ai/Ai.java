@@ -30,6 +30,19 @@ public class Ai {
     }
 
     public int evaluate2(Position2 pos, boolean iaTurn, int Profondeur) {
+        if(pos.isFinalPosition() && pos.nbcoupValide(numPlayer) == 0){
+            return -1000;
+        }
+        else if(pos.isFinalPosition() && pos.nbcoupValide(numPlayer == 1 ? 2 : 1 ) == 0){
+            return 1000;}
+        else if(pos.isFinalPosition() && iaTurn){
+            if(pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur() > 0){
+                return 999;
+            }
+            else{
+                return -999;
+            }
+        }
         return pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur();
     }
 
@@ -147,6 +160,26 @@ public class Ai {
         }
         return res;
     }
+
+    public int AlphaBetaValue(Position2 posCourante, int alpha , int beta ,boolean iaTurn,boolean isMax ,int profondeur, int profondeurMax){
+        if(posCourante.isWinning()){
+            return 64;
+        }
+        if(posCourante.isLoosing()){
+            return -64;
+        }
+        if(posCourante.isDraw()){
+            return 0;
+        }
+        if(profondeur ==  profondeurMax){
+            return evaluate2(posCourante,iaTurn,profondeur);
+        }
+        //if(isMax)
+
+        return 0;
+    }
+
+
 
     public static int max(int[] array) {
         int max = 0;

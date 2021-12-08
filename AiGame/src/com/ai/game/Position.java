@@ -19,6 +19,7 @@ public class Position {
     }
 
 
+
     public boolean coupValide(int i ){
         if(iaTurn){
             return caseOrdi[i] != 0;
