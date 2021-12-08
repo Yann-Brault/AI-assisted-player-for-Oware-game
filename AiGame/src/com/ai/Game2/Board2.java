@@ -98,19 +98,19 @@ public class Board2 {
         int[] opponentHoles;
         if (iaTurn) { // choix du trou de l'ia
             Position2 currentPos = this.getActualPosition();
-            Position2[] children = currentPos.getNextPositions(ai.numPlayer);
-            int processors = Runtime.getRuntime().availableProcessors()* 160;
-            CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(ai.numPlayer));
-            executor = Executors.newFixedThreadPool(processors);
+            Position2[] children = currentPos.getNextPositions(Ai.numPlayer);
+//            int processors = Runtime.getRuntime().availableProcessors()* 16;
+            CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
+            executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
             int[] valuesNodes = new int[size];
             int p = 6;
-            if(currentPos.nbcoupValide(ai.numPlayer) <= 10 ){
+            if(currentPos.nbcoupValide(Ai.numPlayer) <= 10 ){
              p =7;
             }
-            int[] cases = ai.numPlayer == 1 ? case_J1 : case_J2;
+            int[] cases = Ai.numPlayer == 1 ? case_J1 : case_J2;
             long time = System.currentTimeMillis();
             for (int i = 0; i < sizePlayerCase; i++) {
-                if (currentPos.coupValideBleu(cases[i], ai.numPlayer)) {
+                if (currentPos.coupValideBleu(cases[i], Ai.numPlayer)) {
                     final int i2 = i;
                     final int p2 = p;
                     final Position2 currentchildrenB = children[i2];
