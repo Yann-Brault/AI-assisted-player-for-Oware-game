@@ -117,7 +117,7 @@ public class Board2 {
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            valuesNodes[i2] = ai.valeurMinMax2(currentchildrenB, iaTurn, 0, p2);;
+                            valuesNodes[i2] = Ai.valeurMinMax2(currentchildrenB, iaTurn, 0, p2);;
 //                            System.out.println("a thread " + Arrays.toString(valuesNodes));
                             latch.countDown();
                         }
@@ -127,7 +127,7 @@ public class Board2 {
                 } else {
                     valuesNodes[i] = -100;
                 }
-                if (currentPos.coupValideRouge(cases[i], ai.numPlayer)) {
+                if (currentPos.coupValideRouge(cases[i], Ai.numPlayer)) {
                     final int i2 = i;
                     final int p2 = p;
                     final int[] calculus = {-2};
@@ -135,7 +135,7 @@ public class Board2 {
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            valuesNodes[i2 + sizePlayerCase] =  ai.valeurMinMax2(currentchildrenR, iaTurn, 0, p2);
+                            valuesNodes[i2 + sizePlayerCase] =  Ai.valeurMinMax2(currentchildrenR, iaTurn, 0, p2);
 //                            System.out.println("a thread " + Arrays.toString(calculus));
                             latch.countDown();
                         }
@@ -150,15 +150,15 @@ public class Board2 {
 
 
             }
-            latch.await(); // attend la find es calculs
+            latch.await(2000,TimeUnit.MILLISECONDS); // attend la find es calculs
 
 
 
-            System.out.println("l'ia a recherché avec une profondeur de " + (p+1) + " coups parmis " + ai.nbnode + " noeuds.");
+            System.out.println("l'ia a recherché avec une profondeur de " + (p+1) + " coups parmis " + Ai.nbnode + " noeuds.");
             System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
             executor.shutdown();
             System.out.println(executor.isShutdown());
-            ai.nbnode = 0;
+            Ai.nbnode = 0;
 
             System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
             int max = -100;
@@ -169,7 +169,7 @@ public class Board2 {
                     idxmax = i;
                 }
             }
-            if (ai.numPlayer == 1) {
+            if (Ai.numPlayer == 1) {
                 if (idxmax >= sizePlayerCase) {
                     holeToStartFrom = case_J1[idxmax - sizePlayerCase]-1;
                     colorToPlay = false;

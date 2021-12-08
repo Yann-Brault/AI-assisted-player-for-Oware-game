@@ -109,7 +109,7 @@ public class Board {
             long time = System.currentTimeMillis();
             for (int i = 0; i < size; i++) {
                 if (currentPos.coupValide(i)) {
-                    valuesNodes[i] = max(ai.valeurMinMax(children[i], iaTurn, 0, p),ai.evaluate(children[i],true,0));
+//                    valuesNodes[i] = max(ai.valeurMinMax(children[i], iaTurn, 0, p),ai.evaluate(children[i],true,0));
                 } else {
                     valuesNodes[i] = -100;
                 }
