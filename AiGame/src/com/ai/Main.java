@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
 
-        Board2 b2 = new Board2(false);
+        Board2 b2 = new Board2(true);
 
 
         while ( !b2.getActualPosition().isFinalPosition()) {

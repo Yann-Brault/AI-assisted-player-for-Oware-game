@@ -46,6 +46,25 @@ public class Ai {
         return pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur();
     }
 
+    public static int evaluateEmptyHole(Position2 pos) {
+        int nbHolesEmpty = 0;
+        if (numPlayer == 1) {
+            for (int i = 0; i < pos.getTableauBleu().length; i++) {
+                if (i % 2 == 0 && pos.getTableauBleu()[i] == 0 && pos.getTableauRouge()[i] == 0) {
+                    nbHolesEmpty++;
+                }
+            }
+            return nbHolesEmpty;
+        } else {
+            for (int i = 0; i < pos.getTableauBleu().length; i++) {
+                if (i % 2 == 1 && pos.getTableauBleu()[i] == 0 && pos.getTableauRouge()[i] == 0) {
+                    nbHolesEmpty++;
+                }
+            }
+            return -nbHolesEmpty;
+        }
+    }
+
 
     public static int valeurMinMax2(Position2 posCourante, boolean iaTurn, int profondeur, int profondeurMax) {
         nbnode++;
@@ -66,6 +85,7 @@ public class Ai {
         }
         if (profondeur == profondeurMax) {
             return evaluate2(posCourante, iaTurn, profondeur);
+            //return  evaluateEmptyHole(posCourante);
             // dans un premier temps l'évaluation sera la
             // différence du nb de pions pris
         }
@@ -110,7 +130,11 @@ public class Ai {
         return res;
     }
 
-    public int AlphaBetaValue(Position2 posCourante, int alpha , int beta ,boolean iaTurn,boolean isMax ,int profondeur, int profondeurMax){
+    public int alphaBetaValue(Position2 posCourante, int alpha , int beta ,boolean iaTurn, int profondeur, int profondeurMax){
+        nbnode++;
+        Position2 nextPosBleu;
+        Position2 nextPosRouge;
+        int num = iaTurn ? numPlayer : (numPlayer == 1 ? 2 : 1);
         if(posCourante.isWinning()){
             return 64;
         }
@@ -123,9 +147,70 @@ public class Ai {
         if(profondeur ==  profondeurMax){
             return evaluate2(posCourante,iaTurn,profondeur);
         }
-        //if(isMax)
-
-        return 0;
+        if(iaTurn) {
+            for (int i = 0; i < Board2.getSize(); i++) {
+                if (posCourante.coupValideBleu(i, num)) {
+                    nextPosBleu = posCourante.getNextPosition(i, true); // pos_next devient la position courante, et on change le joueur
+                    // il faut peut être utiliser un alphaBlue et un alphaRed
+                    alpha = Math.max(alpha, alphaBetaValue(nextPosBleu, alpha, beta, nextPosBleu.isIaTurn(), profondeur + 1, profondeurMax));
+                    if (alpha >= beta) {
+                        return alpha;
+                    }
+                } else {
+                    if (iaTurn) {
+                        alpha = -100;
+                    } else {
+                        alpha = 100;
+                    }
+                }
+                if (posCourante.coupValideRouge(i, num)) {
+                    nextPosRouge = posCourante.getNextPosition(i, false);
+                    alpha = Math.max(alpha, alphaBetaValue(nextPosRouge, alpha, beta, nextPosRouge.isIaTurn(), profondeur + 1, profondeurMax));
+                    if (alpha >= beta) {
+                        return alpha;
+                    }
+                } else {
+                    if (iaTurn) {
+                        alpha = -100;
+                    } else {
+                        alpha = 100;
+                    }
+                }
+            }
+            //return Math.max(alphaBlue, alphaRed);
+            return alpha;
+        } else {
+            for (int i = 0; i < Board2.getSize(); i++) {
+                if (posCourante.coupValideBleu(i, num)) {
+                    nextPosBleu = posCourante.getNextPosition(i, true); // pos_next devient la position courante, et on change le joueur
+                    // même chose qu'avec les alpha, un par couleur
+                    beta = Math.min(beta, alphaBetaValue(nextPosBleu, alpha, beta, nextPosBleu.isIaTurn(), profondeur + 1, profondeurMax));
+                    if (alpha <= beta) {
+                        return beta;
+                    }
+                } else {
+                    if (iaTurn) {
+                        beta = -100;
+                    } else {
+                        beta = 100;
+                    }
+                }
+                if (posCourante.coupValideRouge(i, num)) {
+                    nextPosRouge = posCourante.getNextPosition(i, false);
+                    beta = Math.min(beta, alphaBetaValue(nextPosRouge, alpha, beta, nextPosRouge.isIaTurn(), profondeur + 1, profondeurMax));
+                    if (alpha <= beta) {
+                        return beta;
+                    }
+                } else {
+                    if (iaTurn) {
+                        beta = -100;
+                    } else {
+                        beta = 100;
+                    }
+                }
+            }
+            return beta;
+        }
     }
 
 
