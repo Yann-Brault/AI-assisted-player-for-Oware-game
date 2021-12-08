@@ -8,9 +8,7 @@ import com.ai.game.Position;
 
 public class Main {
 
-    public static void main(String[] args) {
-        Board b = new Board(false);
-        Position depart = b.getactualPosition();
+    public static void main(String[] args) throws InterruptedException {
 
         Board2 b2 = new Board2(false);
 

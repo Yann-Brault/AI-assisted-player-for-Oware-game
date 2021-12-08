@@ -7,9 +7,9 @@ import com.ai.game.Position;
 
 public class Ai {
     private int score;
-    public int nbnode = 0;
+    public static int nbnode = 0;
     public static int nbturn = 0;
-    public final int numPlayer;
+    public static int numPlayer = 0;
     private final static int[] case_J1 = new int[]{1, 3, 5, 7, 9, 11, 13, 15};
     private final static int[] case_J2 = new int[]{2, 4, 6, 8, 10, 12, 14, 16};
     private final static int sizePlayerCase = 8;
@@ -29,7 +29,7 @@ public class Ai {
         //}
     }
 
-    public int evaluate2(Position2 pos, boolean iaTurn, int Profondeur) {
+    public static int evaluate2(Position2 pos, boolean iaTurn, int Profondeur) {
         if(pos.isFinalPosition() && pos.nbcoupValide(numPlayer) == 0){
             return -1000;
         }
@@ -98,7 +98,7 @@ public class Ai {
     }
 
 
-    public int valeurMinMax2(Position2 posCourante, boolean iaTurn, int profondeur, int profondeurMax) {
+    public static int valeurMinMax2(Position2 posCourante, boolean iaTurn, int profondeur, int profondeurMax) {
         nbnode++;
         int[] tabValeursRouge = new int[Board2.getSize()];
         int[] tabValeurBleu = new int[Board2.getSize()];

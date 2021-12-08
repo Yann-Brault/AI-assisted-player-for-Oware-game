@@ -5,6 +5,10 @@ import com.ai.game.Position;
 
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -84,7 +88,8 @@ public class Board2 {
     }
 
 
-    public void play() {
+    public void play() throws InterruptedException {
+        ExecutorService executor = null;
         Ai.nbturn ++;
         int seedTaken = 0;
         int holeToStartFrom = 0;
@@ -94,30 +99,67 @@ public class Board2 {
         if (iaTurn) { // choix du trou de l'ia
             Position2 currentPos = this.getActualPosition();
             Position2[] children = currentPos.getNextPositions(ai.numPlayer);
+            int processors = Runtime.getRuntime().availableProcessors()* 160;
+            CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(ai.numPlayer));
+            executor = Executors.newFixedThreadPool(processors);
             int[] valuesNodes = new int[size];
             int p = 6;
-            if(currentPos.nbcoupValide(ai.numPlayer) <= 5 ){
+            if(currentPos.nbcoupValide(ai.numPlayer) <= 10 ){
              p =7;
             }
             int[] cases = ai.numPlayer == 1 ? case_J1 : case_J2;
             long time = System.currentTimeMillis();
             for (int i = 0; i < sizePlayerCase; i++) {
                 if (currentPos.coupValideBleu(cases[i], ai.numPlayer)) {
-                    valuesNodes[i] = max(ai.valeurMinMax2(children[i], iaTurn, 0, p), ai.evaluate2(children[i], iaTurn, 0));
+                    final int i2 = i;
+                    final int p2 = p;
+                    final Position2 currentchildrenB = children[i2];
+                    executor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            valuesNodes[i2] = ai.valeurMinMax2(currentchildrenB, iaTurn, 0, p2);;
+//                            System.out.println("a thread " + Arrays.toString(valuesNodes));
+                            latch.countDown();
+                        }
+
+                    });
+
                 } else {
                     valuesNodes[i] = -100;
                 }
                 if (currentPos.coupValideRouge(cases[i], ai.numPlayer)) {
-                    valuesNodes[i + sizePlayerCase] =  max(ai.valeurMinMax2(children[i], iaTurn, 0, p), ai.evaluate2(children[i], iaTurn, 0));
+                    final int i2 = i;
+                    final int p2 = p;
+                    final int[] calculus = {-2};
+                    final Position2 currentchildrenR = children[i2];
+                    executor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            valuesNodes[i2 + sizePlayerCase] =  ai.valeurMinMax2(currentchildrenR, iaTurn, 0, p2);
+//                            System.out.println("a thread " + Arrays.toString(calculus));
+                            latch.countDown();
+                        }
+
+                    });
+
 
                 } else {
                     valuesNodes[i + sizePlayerCase] = -100;
                 }
 
+
+
             }
+            latch.await(); // attend la find es calculs
+
+
+
             System.out.println("l'ia a recherché avec une profondeur de " + (p+1) + " coups parmis " + ai.nbnode + " noeuds.");
-            ai.nbnode = 0;
             System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
+            executor.shutdown();
+            System.out.println(executor.isShutdown());
+            ai.nbnode = 0;
+
             System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
             int max = -100;
             int idxmax = -1;
