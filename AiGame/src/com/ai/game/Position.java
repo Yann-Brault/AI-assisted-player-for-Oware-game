@@ -23,49 +23,46 @@ public class Position {
         PionsPrisOrdi = pionsPrisOrdi;
     }
 
-    public boolean isWinning(){
-        if(this.isFinalPosition()){
+    public boolean isWinning() {
+        if (this.isFinalPosition()) {
             int numops;
-            if(iaJ1){
+            if (iaJ1) {
                 numops = 2;
-            }
-            else{
+            } else {
                 numops = 1;
             }
-            if((this.nbcoupValide(numops) == 0) && PionsPrisOrdi > PionsPrisJoueur){
+            if ((this.nbcoupValide(numops) == 0) && PionsPrisOrdi > PionsPrisJoueur) {
                 return true;
-            }
-            else{
+            } else {
                 return false;
             }
-        }
-        else{
+        } else {
             return false;
         }
     }
-    public boolean isLoosing(){
-        if(this.isFinalPosition()){
+
+    public boolean isLoosing() {
+        if (this.isFinalPosition()) {
             int num;
-            if(iaJ1){
+            if (iaJ1) {
                 num = 1;
-            }
-            else{
+            } else {
                 num = 2;
             }
-            if((this.nbcoupValide(num) == 0) && PionsPrisOrdi < PionsPrisJoueur){
+            if ((this.nbcoupValide(num) == 0) && PionsPrisOrdi < PionsPrisJoueur) {
                 return true;
-            }
-            else{
+            } else {
                 return false;
             }
-        }
-        else{
+        } else {
             return false;
         }
     }
-    public boolean isDraw(){
-        return this.isFinalPosition() && getPionsPrisJoueur() == 33 && getPionsPrisOrdi() == 33 ;
+
+    public boolean isDraw() {
+        return this.isFinalPosition() && getPionsPrisJoueur() == 33 && getPionsPrisOrdi() == 33;
     }
+
     public boolean coupValide(int i, int numPlayer) {// pas sûr non plus à vérifier si le coup valide est bien défini
         if (numPlayer == 1) {
             for (int j = 0; i < sizePlayerCase; i++) {
@@ -90,14 +87,13 @@ public class Position {
         Position[] array = new Position[size];
         if (numPlayer == 1) {
             for (int i = 0; i < sizePlayerCase; i++) {
-                array[i] = this.getNextPosition(case_J1[i]-1, true);
-                array[i + sizePlayerCase] = this.getNextPosition(case_J1[i]-1, false);
+                array[i] = this.getNextPosition(case_J1[i] - 1, true);
+                array[i + sizePlayerCase] = this.getNextPosition(case_J1[i] - 1, false);
             }
-        }
-        else{
+        } else {
             for (int i = 0; i < sizePlayerCase; i++) {
-                array[i] = this.getNextPosition(case_J2[i]-1, true);
-                array[i + sizePlayerCase] = this.getNextPosition(case_J2[i]-1, false);
+                array[i] = this.getNextPosition(case_J2[i] - 1, true);
+                array[i + sizePlayerCase] = this.getNextPosition(case_J2[i] - 1, false);
             }
 
         }
@@ -145,15 +141,15 @@ public class Position {
     }
 
 
-    public int nbcoupValide(int numPlayer){
+    public int nbcoupValide(int numPlayer) {
         int acc = 0;
         int[] casejoueur = numPlayer == 1 ? case_J1 : case_J2;
-        for(int i = 0 ; i < sizePlayerCase; i++){
-            if(coupValideRouge(casejoueur[i],numPlayer)){
+        for (int i = 0; i < sizePlayerCase; i++) {
+            if (coupValideRouge(casejoueur[i], numPlayer)) {
                 acc++;
             }
-            if(coupValideBleu(casejoueur[i],numPlayer)){
-                acc ++;
+            if (coupValideBleu(casejoueur[i], numPlayer)) {
+                acc++;
             }
         }
         return acc;
@@ -168,7 +164,7 @@ public class Position {
             empty_J1 += tableauRouge[case_J1[i] - 1] + tableauBleu[case_J1[i] - 1];
         }
         int nbGraineRestante = empty_J2 + empty_J1;
-        return getPionsPrisOrdi() >= 33 || getPionsPrisJoueur() >= 33 || (getPionsPrisOrdi() == 32 && getPionsPrisJoueur() == 32) || empty_J1 == 0 || empty_J2 == 0 || nbGraineRestante < 8;
+        return getPionsPrisOrdi() >= 33 || getPionsPrisJoueur() >= 33 || (getPionsPrisOrdi() == 32 && getPionsPrisJoueur() == 32) || nbGraineRestante < 8; //empty_J1 == 0 || empty_J2 == 0
     }
 
     public Position getNextPosition(int trou, boolean bleu) {// sera toujours une position valide l'input varie de 0 à 15 attentions les indices ont 1 de moins que ceux joué par l'input
@@ -269,4 +265,15 @@ public class Position {
         return sb.toString();
     }
 
+    public boolean isFamine(int num, int[] cases) {
+
+
+        int empty = 0;
+        for (int i = 0; i < sizePlayerCase; i++) {
+            empty += tableauRouge[cases[i] - 1] + tableauBleu[cases[i] - 1];
+        }
+        return empty == 0;
+
+
+    }
 }

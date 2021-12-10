@@ -17,17 +17,17 @@ public class Ai {
 
 
     public static int evaluate2(Position pos, boolean iaTurn, int Profondeur) {
-        if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer) == 0) {
-            return Integer.MIN_VALUE;
-        } else if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer == 1 ? 2 : 1) == 0) {
-            return Integer.MAX_VALUE;
-        } else if (pos.isFinalPosition() && iaTurn) {
-            if (pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur() > 0) {
-                return 999;
-            } else {
-                return -999;
-            }
-        }
+//        if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer) == 0) {
+//            return Integer.MIN_VALUE;
+//        } else if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer == 1 ? 2 : 1) == 0) {
+//            return Integer.MAX_VALUE;
+//        } else if (pos.isFinalPosition() && iaTurn) {
+//            if (pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur() > 0) {
+//                return 999;
+//            } else {
+//                return -999;
+//            }
+//        }
         return pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur();
     }
 

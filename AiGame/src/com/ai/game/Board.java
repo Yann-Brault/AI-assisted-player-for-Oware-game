@@ -30,77 +30,38 @@ public class Board {
         this.ai = new Ai(iaBegin ? 1 : 2);
     }
 
-    public static int getSize() {
-        return size;
-    }
-
-    public int[] getTableauBleu() {
-        return tableauBleu;
-    }
-
-    public int[] getTableauRouge() {
-        return tableauRouge;
-    }
-
-    public boolean isIaTurn() {
-        return iaTurn;
-    }
-
-    public void setIaTurn(boolean iaTurn) {
-        this.iaTurn = iaTurn;
-    }
-
-    public int getPionsPrisJoueur() {
-        return PionsPrisJoueur;
-    }
-
-    public void setPionsPrisJoueur(int pionsPrisJoueur) {
-        PionsPrisJoueur = pionsPrisJoueur;
-    }
-
-    public int getPionsPrisOrdi() {
-        return PionsPrisOrdi;
-    }
-
-    public void setPionsPrisOrdi(int pionsPrisOrdi) {
-        PionsPrisOrdi = pionsPrisOrdi;
-    }
-
-    public void addPionsPrisJoueur(int pions) {
-        PionsPrisJoueur += pions;
-    }
-
-    public void addPionsPrisOrdi(int pions) {
-        PionsPrisOrdi += pions;
-    }
-
-
-    public Ai getAi() {
-        return ai;
-    }
-
-    public Position getActualPosition() {
-        return new Position(tableauBleu, tableauRouge, iaTurn, iaJ1, getPionsPrisJoueur(), getPionsPrisOrdi());
-    }
-
-
     public void play() throws InterruptedException {
         ExecutorService executor = null;
-        Ai.nbturn ++;
+        Ai.nbturn++;
         int seedTaken = 0;
         int holeToStartFrom = 0;
-        boolean colorToPlay = false; // false implique de joeur rouge
+        boolean colorToPlay = false; // false implique de jouer rouge
+
         if (iaTurn) { // choix du trou de l'ia
             Position currentPos = this.getActualPosition();
+            int[] cases = Ai.numPlayer == 1 ? case_J1 : case_J2;
+            if (currentPos.isFamine(Ai.numPlayer, cases)) {
+                int result = 0;
+                for (int i = 0; i < size; i++) {
+                    result += tableauBleu[i] + tableauRouge[i];
+                    tableauBleu[i] = 0;
+                    tableauRouge[i] = 0;
+
+                }
+                addPionsPrisJoueur(result);
+
+
+                return;
+            }
             Position[] children = currentPos.getNextPositions(Ai.numPlayer);
             CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
             executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
             int[] valuesNodes = new int[size];
             int p = 8;
-            if(currentPos.nbcoupValide(Ai.numPlayer) <= 10 ){
-             p = 10;
+            if (currentPos.nbcoupValide(Ai.numPlayer) <= 10) {
+                p = 10;
             }
-            int[] cases = Ai.numPlayer == 1 ? case_J1 : case_J2;
+
             long time = System.currentTimeMillis();
             for (int i = 0; i < sizePlayerCase; i++) {
                 if (currentPos.coupValideBleu(cases[i], Ai.numPlayer)) {
@@ -112,7 +73,7 @@ public class Board {
                         @Override
                         public void run() {
 
-                            valuesNodes[i2] =  Ai.alphaBeta2(currentchildrenB, false,Integer.MIN_VALUE,Integer.MAX_VALUE, 0, p2);
+                            valuesNodes[i2] = Ai.alphaBeta2(currentchildrenB, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
                             latch.countDown();
                         }
 
@@ -130,7 +91,7 @@ public class Board {
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            valuesNodes[i2] =  Ai.alphaBeta2(currentchildrenR, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
+                            valuesNodes[i2] = Ai.alphaBeta2(currentchildrenR, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
                             latch.countDown();
                         }
 
@@ -142,13 +103,11 @@ public class Board {
                 }
 
 
-
             }
             latch.await(); // attend la find es calculs 2000,TimeUnit.MILLISECONDS
 
 
-
-            System.out.println("l'ia a recherché avec une profondeur de " + (p+1) + " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut);
+            System.out.println("l'ia a recherché avec une profondeur de " + (p + 1) + " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut);
             System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
             executor.shutdown();
             System.out.println(executor.isShutdown());
@@ -166,31 +125,47 @@ public class Board {
             }
             if (Ai.numPlayer == 1) {
                 if (idxmax >= sizePlayerCase) {
-                    holeToStartFrom = case_J1[idxmax - sizePlayerCase]-1;
+                    holeToStartFrom = case_J1[idxmax - sizePlayerCase] - 1;
                     colorToPlay = false;
                 }
                 if (idxmax < sizePlayerCase) {
-                    holeToStartFrom = case_J1[idxmax] -1 ;
+                    holeToStartFrom = case_J1[idxmax] - 1;
                     colorToPlay = true;
                 }
 
-            }
-            else if (ai.numPlayer == 2) {
+            } else if (ai.numPlayer == 2) {
                 if (idxmax >= sizePlayerCase) {
-                    holeToStartFrom = case_J2[idxmax - sizePlayerCase]-1;
+                    holeToStartFrom = case_J2[idxmax - sizePlayerCase] - 1;
                     colorToPlay = false;
                 }
                 if (idxmax < sizePlayerCase) {
-                    holeToStartFrom = case_J2[idxmax] -1 ;
+                    holeToStartFrom = case_J2[idxmax] - 1;
                     colorToPlay = true;
                 }
 
             }
             String s = colorToPlay ? "blue" : "red";
-            System.out.println("l'ia joue "+ (holeToStartFrom +1)  + " " + s);
-        }
+            System.out.println("l'ia joue " + (holeToStartFrom + 1) + " " + s);
+        } else {// choix du trou de l'opposant
+            Position currentPos = this.getActualPosition();
+            int num = iaJ1 ? 2 : 1;
+            int[] cases = num == 1 ? case_J1 : case_J2;
+            if (currentPos.isFamine(num, cases)) {
+                int result = 0;
+                for (int i = 0; i < size; i++) {
+                    result += tableauBleu[i] + tableauRouge[i];
+                    tableauBleu[i] = 0;
+                    tableauRouge[i] = 0;
 
-        else {// choix du trou de l'opposant
+                }
+                addPionsPrisOrdi(result);
+
+
+                return;
+
+            }
+
+
             Scanner sc = new Scanner(System.in);
             boolean validInput = false;
             int i = -1;
@@ -245,9 +220,7 @@ public class Board {
             }
 
         }
-
         int index = holeToStartFrom + 1 >= size ? 0 : holeToStartFrom + 1;
-
         if (colorToPlay) {
             int nbGraine = tableauBleu[holeToStartFrom];
             tableauBleu[holeToStartFrom] = 0;
@@ -292,14 +265,71 @@ public class Board {
             tableauRouge[index] = 0;
             index = index - 1 < 0 ? size - 1 : index - 1;
         }
-
         if (iaTurn) {
             addPionsPrisOrdi(seedTaken);
         } else {
             addPionsPrisJoueur(seedTaken);
         }
+
+
         iaTurn = !iaTurn;
     }
+
+
+
+    public static int getSize() {
+        return size;
+    }
+
+    public int[] getTableauBleu() {
+        return tableauBleu;
+    }
+
+    public int[] getTableauRouge() {
+        return tableauRouge;
+    }
+
+    public boolean isIaTurn() {
+        return iaTurn;
+    }
+
+    public void setIaTurn(boolean iaTurn) {
+        this.iaTurn = iaTurn;
+    }
+
+    public int getPionsPrisJoueur() {
+        return PionsPrisJoueur;
+    }
+
+    public void setPionsPrisJoueur(int pionsPrisJoueur) {
+        PionsPrisJoueur = pionsPrisJoueur;
+    }
+
+    public int getPionsPrisOrdi() {
+        return PionsPrisOrdi;
+    }
+
+    public void setPionsPrisOrdi(int pionsPrisOrdi) {
+        PionsPrisOrdi = pionsPrisOrdi;
+    }
+
+    public void addPionsPrisJoueur(int pions) {
+        PionsPrisJoueur += pions;
+    }
+
+    public void addPionsPrisOrdi(int pions) {
+        PionsPrisOrdi += pions;
+    }
+
+
+    public Ai getAi() {
+        return ai;
+    }
+
+    public Position getActualPosition() {
+        return new Position(tableauBleu, tableauRouge, iaTurn, iaJ1, getPionsPrisJoueur(), getPionsPrisOrdi());
+    }
+
 
 
     @Override
