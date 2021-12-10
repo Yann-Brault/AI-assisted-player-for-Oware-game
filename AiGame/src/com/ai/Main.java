@@ -1,24 +1,37 @@
 package com.ai;
 
-import com.ai.ai.Ai;
+
 import com.ai.game.Board;
-import com.ai.game.Position;
+
+import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) {
-        Board b = new Board(true);
-        Position depart = b.getactualPosition();
-        Ai ai = new Ai();
-        //System.out.println(ai.valeurMinMax(depart, depart.isIaTurn(), 0,5));
-//        Position p2 = depart.getNextPos(3);
-//        System.out.println(p2.getPionsPrisOrdi());
+    public static void main(String[] args) throws InterruptedException {
+        Scanner sc = new Scanner(System.in);
 
-        while ( !b.getactualPosition().IsFinalPosition()) {
-            b.play();
-            System.out.println(b);
-            System.out.printf("ai score : %d\n", b.getPionsPrisOrdi());
-            System.out.printf("player score : %d\n", b.getPionsPrisJoueur());
+        boolean J1ia = false;
+        while (true) {
+            System.out.println("Ia commence ?");
+            String str = sc.nextLine();
+            if(str.equalsIgnoreCase("oui")){
+                J1ia = true;
+                break;
+            }
+            if(str.equalsIgnoreCase("non")){
+                break;
+            }
         }
+
+
+        Board b2 = new Board(J1ia);
+        while (!b2.getActualPosition().isFinalPosition()) {
+            b2.play();
+            System.out.println(b2);
+            System.out.printf("ai score : %d\n", b2.getPionsPrisOrdi());
+            System.out.printf("player score : %d\n", b2.getPionsPrisJoueur());
+        }
+
+
     }
 }

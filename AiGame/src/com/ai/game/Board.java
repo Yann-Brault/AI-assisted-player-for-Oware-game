@@ -3,50 +3,290 @@ package com.ai.game;
 import com.ai.ai.Ai;
 
 import java.util.Arrays;
-import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import static java.lang.Math.max;
 
 public class Board {
-    private final static int size = 6;
-    private final static int initialGraine = 4;
-    private final int[] caseJoueur = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine};
-    private final int[] caseOrdi = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine};
+    private final static int size = 16;
+    private final static int initialGraine = 2;
+    private final int[] tableauBleu = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine};
+    private final int[] tableauRouge = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine};
     private boolean iaTurn;
+    private final boolean iaJ1;
     private int PionsPrisJoueur; //pions pris par le joueur
     private int PionsPrisOrdi; // pions pris par l'ordi
+    private final static int[] case_J1 = new int[]{1, 3, 5, 7, 9, 11, 13, 15};
+    private final static int[] case_J2 = new int[]{2, 4, 6, 8, 10, 12, 14, 16};
+    private final static int sizePlayerCase = 8;
     private final Ai ai;
 
     public Board(boolean iaBegin) {
-        this.ai = new Ai();
+
         this.iaTurn = iaBegin;
+        this.iaJ1 = iaBegin;
+        this.ai = new Ai(iaBegin ? 1 : 2);
+    }
+
+    public void play() throws InterruptedException {
+        ExecutorService executor = null;
+        Ai.nbturn++;
+        int seedTaken = 0;
+        int holeToStartFrom = 0;
+        boolean colorToPlay = false; // false implique de jouer rouge
+
+        if (iaTurn) { // choix du trou de l'ia
+            Position currentPos = this.getActualPosition();
+            int[] cases = Ai.numPlayer == 1 ? case_J1 : case_J2;
+            if (currentPos.isFamine(Ai.numPlayer, cases)) {
+                int result = 0;
+                for (int i = 0; i < size; i++) {
+                    result += tableauBleu[i] + tableauRouge[i];
+                    tableauBleu[i] = 0;
+                    tableauRouge[i] = 0;
+
+                }
+                addPionsPrisJoueur(result);
+
+
+                return;
+            }
+            Position[] children = currentPos.getNextPositions(Ai.numPlayer);
+            CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
+            executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
+            int[] valuesNodes = new int[size];
+            int p = 8;
+            if (currentPos.nbcoupValide(Ai.numPlayer) <= 10) {
+                p = 10;
+            }
+
+            long time = System.currentTimeMillis();
+            for (int i = 0; i < sizePlayerCase; i++) {
+                if (currentPos.coupValideBleu(cases[i], Ai.numPlayer)) {
+                    final int i2 = i;
+                    final int p2 = p;
+                    final Position currentchildrenB = children[i2];
+
+                    executor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            valuesNodes[i2] = Ai.alphaBeta2(currentchildrenB, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
+                            latch.countDown();
+                        }
+
+                    });
+
+                } else {
+                    valuesNodes[i] = Integer.MIN_VALUE;
+                }
+                if (currentPos.coupValideRouge(cases[i], Ai.numPlayer)) {
+                    final int i2 = i + sizePlayerCase;
+                    final int p2 = p;
+
+                    final Position currentchildrenR = children[i2];
+
+                    executor.submit(new Runnable() {
+                        @Override
+                        public void run() {
+                            valuesNodes[i2] = Ai.alphaBeta2(currentchildrenR, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
+                            latch.countDown();
+                        }
+
+                    });
+
+
+                } else {
+                    valuesNodes[i + sizePlayerCase] = Integer.MIN_VALUE;
+                }
+
+
+            }
+            latch.await(); // attend la find es calculs 2000,TimeUnit.MILLISECONDS
+
+
+            System.out.println("l'ia a recherché avec une profondeur de " + (p + 1) + " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut);
+            System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
+            executor.shutdown();
+            System.out.println(executor.isShutdown());
+            Ai.nbnode = 0;
+            Ai.nbcut = 0;
+
+            System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
+            int max = Integer.MIN_VALUE;
+            int idxmax = -1;
+            for (int i = 0; i < size; i++) {
+                if (valuesNodes[i] >= max) {
+                    max = valuesNodes[i];
+                    idxmax = i;
+                }
+            }
+            if (Ai.numPlayer == 1) {
+                if (idxmax >= sizePlayerCase) {
+                    holeToStartFrom = case_J1[idxmax - sizePlayerCase] - 1;
+                    colorToPlay = false;
+                }
+                if (idxmax < sizePlayerCase) {
+                    holeToStartFrom = case_J1[idxmax] - 1;
+                    colorToPlay = true;
+                }
+
+            } else if (ai.numPlayer == 2) {
+                if (idxmax >= sizePlayerCase) {
+                    holeToStartFrom = case_J2[idxmax - sizePlayerCase] - 1;
+                    colorToPlay = false;
+                }
+                if (idxmax < sizePlayerCase) {
+                    holeToStartFrom = case_J2[idxmax] - 1;
+                    colorToPlay = true;
+                }
+
+            }
+            String s = colorToPlay ? "blue" : "red";
+            System.out.println("l'ia joue " + (holeToStartFrom + 1) + " " + s);
+        } else {// choix du trou de l'opposant
+            Position currentPos = this.getActualPosition();
+            int num = iaJ1 ? 2 : 1;
+            int[] cases = num == 1 ? case_J1 : case_J2;
+            if (currentPos.isFamine(num, cases)) {
+                int result = 0;
+                for (int i = 0; i < size; i++) {
+                    result += tableauBleu[i] + tableauRouge[i];
+                    tableauBleu[i] = 0;
+                    tableauRouge[i] = 0;
+
+                }
+                addPionsPrisOrdi(result);
+
+
+                return;
+
+            }
+
+
+            Scanner sc = new Scanner(System.in);
+            boolean validInput = false;
+            int i = -1;
+            while (!validInput) {
+                System.out.println("player choose a hole ?");
+                String str = sc.nextLine();
+                String[] entry = str.split(" ");
+                if (entry.length == 0 || entry.length > 2) { // Si taille entrée non valide on boucle
+                    continue;
+                }
+                try {
+                    i = Integer.parseInt(entry[0]);
+                } catch (Exception e) { // on boucle si premier param pas un chiffre
+                    continue;
+                }
+
+                if ((i >= 1 && i <= 16) && (entry[1].equalsIgnoreCase("b") || entry[1].equalsIgnoreCase("r"))) {
+                    colorToPlay = entry[1].equalsIgnoreCase("b"); // la couleur est un bool
+                    int numPlayer;
+                    boolean included = false;
+                    if (!iaJ1) {
+                        numPlayer = 1;
+                        if (colorToPlay) {
+
+                            included = this.getActualPosition().coupValideBleu(i, numPlayer);
+                        } else {
+
+                            included = this.getActualPosition().coupValideRouge(i, numPlayer);
+
+                        }
+                        if (!included) {
+                            continue;
+                        }
+                    } else {
+                        numPlayer = 2;
+                        if (colorToPlay) {
+
+                            included = this.getActualPosition().coupValideBleu(i, numPlayer);
+                        } else {
+
+                            included = this.getActualPosition().coupValideRouge(i, numPlayer);
+
+                        }
+                        if (!included) {
+                            continue;
+                        }
+                    }
+                    validInput = true;
+
+                    holeToStartFrom = i - 1; // -1 pour respecter les index
+                }
+            }
+
+        }
+        int index = holeToStartFrom + 1 >= size ? 0 : holeToStartFrom + 1;
+        if (colorToPlay) {
+            int nbGraine = tableauBleu[holeToStartFrom];
+            tableauBleu[holeToStartFrom] = 0;
+            while (nbGraine > 0) {
+                if (index != holeToStartFrom) {
+                    tableauBleu[index]++;
+                    nbGraine--;
+                }
+                if (nbGraine > 0) {
+                    if (iaJ1) {
+                        if (iaTurn) {
+                            index = index + 2 >= size ? 1 : index + 2;
+                        } else {
+                            index = index + 2 >= size ? 0 : index + 2;
+                        }
+                    } else {
+                        if (iaTurn) {
+                            index = index + 2 >= size ? 0 : index + 2;
+                        } else {
+                            index = index + 2 >= size ? 1 : index + 2;
+                        }
+                    }
+                }
+            }
+        } else {
+            int nbGraine = tableauRouge[holeToStartFrom];
+            tableauRouge[holeToStartFrom] = 0;
+            while (nbGraine > 0) {
+                if (index != holeToStartFrom) {
+                    tableauRouge[index]++;
+                    nbGraine--;
+                }
+                if (nbGraine > 0) {
+                    index = index + 1 >= size ? 0 : index + 1;
+
+                }
+            }
+        }
+        while ((tableauBleu[index] + tableauRouge[index]) == 2 || (tableauBleu[index] + tableauRouge[index]) == 3) {
+            seedTaken += (tableauBleu[index] + tableauRouge[index]);
+            tableauBleu[index] = 0;
+            tableauRouge[index] = 0;
+            index = index - 1 < 0 ? size - 1 : index - 1;
+        }
+        if (iaTurn) {
+            addPionsPrisOrdi(seedTaken);
+        } else {
+            addPionsPrisJoueur(seedTaken);
+        }
+
+
+        iaTurn = !iaTurn;
     }
 
 
-    public int[] getCaseJoueur() {
-        return caseJoueur;
-    }
-
-    public int[] getCaseOrdi() {
-        return caseOrdi;
-    }
 
     public static int getSize() {
         return size;
     }
 
-    public static int getInitialGraine() {
-        return initialGraine;
+    public int[] getTableauBleu() {
+        return tableauBleu;
     }
 
-
-    public int getCaseJoueurAt(int i) {
-        return caseJoueur[i];
-    }
-
-    public int getCaseOrdiAt(int i) {
-        return caseOrdi[i];
+    public int[] getTableauRouge() {
+        return tableauRouge;
     }
 
     public boolean isIaTurn() {
@@ -82,150 +322,42 @@ public class Board {
     }
 
 
-    public Position getactualPosition() {
-        int[] copycaseJoueur = Arrays.copyOf(caseJoueur, size);
-        int[] copyCaseOrdi = Arrays.copyOf(caseOrdi, size);
-        return new Position(copycaseJoueur, copyCaseOrdi, isIaTurn(), getPionsPrisJoueur(), getPionsPrisOrdi());
+    public Ai getAi() {
+        return ai;
     }
 
-    public void play() {
-        int seedTaken = 0;
-        int holeToStartFrom = 0;
-        int[] playerHoles;
-        int[] opponentHoles;
-        if (iaTurn) {
-//            Random r = new Random();
-//            holeToStartFrom = r.nextInt(6);
-//            System.out.println(holeToStartFrom);
-            playerHoles = getCaseOrdi();
-            opponentHoles = getCaseJoueur();
-            Position currentPos = this.getactualPosition();
-            Position[] children = currentPos.getsNextPositions();
-            int[] valuesNodes = new int[size];
-            int p = 9;
-            if(currentPos.nbcoupValide() <= 2){
-                p +=1;
-            }
-            long time = System.currentTimeMillis();
-            for (int i = 0; i < size; i++) {
-                if (currentPos.coupValide(i)) {
-                    valuesNodes[i] = max(ai.valeurMinMax(children[i], iaTurn, 0, p),ai.evaluate(children[i],true,0));
-                } else {
-                    valuesNodes[i] = -100;
-                }
-            }
-            System.out.println("l'ia a recherché avec une profondeur de "+p+" coups parmis "+ai.nbnode+" noeuds.");
-            ai.nbnode = 0;
-            System.out.println("en t = " + (System.currentTimeMillis() - time) +"ms");
-            System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes));
-            int max = -100;
-            int idxmax = -1;
-            for (int i = 0; i < size; i++) {
-                if (valuesNodes[i] > max) {
-                    max = valuesNodes[i];
-                    idxmax = i;
-                }
-            }
-            holeToStartFrom = idxmax;
-            System.out.println("L'ia a choisis le trou n° "+holeToStartFrom);
-
-        } else {
-            Scanner sc = new Scanner(System.in);  // Create a Scanner object
-            System.out.println("which hole do you want to play ?");
-            holeToStartFrom = sc.nextInt();
-            playerHoles = getCaseJoueur();
-            opponentHoles = getCaseOrdi();
-        }
-
-        int seedToPlay = playerHoles[holeToStartFrom];
-        playerHoles[holeToStartFrom] = 0;
-        int indexToPlant = holeToStartFrom + 1;
-        boolean capturing = false;
-        int tour = 0 ;
-        //tant que l'on peut jouer
-        while (seedToPlay > 0) {
-            //on joue dans nos trous
-            if(tour > 0){indexToPlant =0;}
-            capturing = false;
-            for (int i = indexToPlant; i < size; i++) {
-                if (seedToPlay > 0 && i != holeToStartFrom) {
-                    playerHoles[i]++;
-                    seedToPlay--;
-                }
-            }
-            /*
-             * si après avoir joué dans nos trous il nous reste des graines alors on les joue
-             * chez l'adversaire
-             */
-
-            if (seedToPlay > 0) {
-                indexToPlant = 0;
-                for (int i = 0; i < size; i++) {
-                    if (seedToPlay > 0) {
-                        opponentHoles[i]++;
-                        seedToPlay--;
-                        if (i > 0) {
-                            indexToPlant++;
-                        }
-                    } else {
-                        break;
-                    }
-                }
-                capturing = true;
-            }
-            tour ++;
-        }
-        if (capturing) {
-            if (1 < opponentHoles[indexToPlant] && opponentHoles[indexToPlant] <= 3) {
-                while (indexToPlant >= 0 && 1 < opponentHoles[indexToPlant] && opponentHoles[indexToPlant] <= 3) {
-                    seedTaken += opponentHoles[indexToPlant];
-                    opponentHoles[indexToPlant] = 0;
-                    indexToPlant--;
-                }
-            }
-        }
-        updateGameStatus(iaTurn, playerHoles, opponentHoles, seedTaken);
-        setIaTurn(!iaTurn);
+    public Position getActualPosition() {
+        return new Position(tableauBleu, tableauRouge, iaTurn, iaJ1, getPionsPrisJoueur(), getPionsPrisOrdi());
     }
 
-    private void updateGameStatus(boolean iaTurn, int[] playerHoles, int[] opponentHoles, int seedTaken) {
-        if (iaTurn) {
-            addPionsPrisOrdi(seedTaken);
-        } else {
-            addPionsPrisJoueur(seedTaken);
-        }
-        updateHoles(iaTurn, playerHoles, opponentHoles);
-    }
-
-    private void updateHoles(boolean iaTurn, int[] playerHoles, int[] opponentHoles) {
-        if (iaTurn) {
-            setArray(getCaseOrdi(), playerHoles);
-            setArray(getCaseJoueur(), opponentHoles);
-        } else {
-            setArray(getCaseJoueur(), playerHoles);
-            setArray(getCaseOrdi(), opponentHoles);
-        }
-    }
-
-    private void setArray(int[] oldArray, int[] newArray) {
-        System.arraycopy(newArray, 0, oldArray, 0, oldArray.length);
-    }
 
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("| ");
-        for (int i = size - 1; i >= 0; i--) {
-            sb.append(caseOrdi[i]).append(" | ");
+        sb.append(" ".repeat(7));
+        for (int i = 1; i < size / 2 + 1; i++) {
+            sb.append(String.format("%d", i));
+            sb.append(" ".repeat(12));
         }
         sb.append("\n");
-        sb.append("-".repeat(size * 4 + 1));
+        sb.append("| ");
+        for (int i = 0; i < size / 2; i++) {
+            sb.append(String.format("\033[34m b:%d", tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
+        }
+
+        sb.append("\n");
+        sb.append("-".repeat(size * 6 + 9));
         sb.append("\n");
         sb.append("| ");
-        for (int i = 0; i < size; i++) {
-            sb.append(caseJoueur[i]).append(" | ");
+        for (int i = size - 1; i >= size / 2; i--) {
+            sb.append(String.format("\033[34m b:%d", tableauBleu[i])).append(" ").append(String.format("\033[31m r:%d \033[0m", tableauRouge[i])).append(" | ");
         }
+        sb.append("\n");
+        sb.append("      16           15           14            13           12          11           10           9");
+        sb.append("\n");
         return sb.toString();
     }
+
+
 }
