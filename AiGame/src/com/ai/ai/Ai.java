@@ -134,6 +134,10 @@ public class Ai {
         nbnode++;
         Position2 nextPosBleu;
         Position2 nextPosRouge;
+        int blueAlpha = 0;
+        int redAlpha = 0;
+        int blueBeta = 0;
+        int redBeta = 0;
         int num = iaTurn ? numPlayer : (numPlayer == 1 ? 2 : 1);
         if(posCourante.isWinning()){
             return 64;
@@ -152,6 +156,7 @@ public class Ai {
                 if (posCourante.coupValideBleu(i, num)) {
                     nextPosBleu = posCourante.getNextPosition(i, true); // pos_next devient la position courante, et on change le joueur
                     // il faut peut être utiliser un alphaBlue et un alphaRed
+                    //blueAlpha = Math.max(blueAlpha, alphaBetaValue(nextPosBleu, blueAlpha, beta, nextPosBleu.isIaTurn(), profondeur + 1, profondeurMax));
                     alpha = Math.max(alpha, alphaBetaValue(nextPosBleu, alpha, beta, nextPosBleu.isIaTurn(), profondeur + 1, profondeurMax));
                     if (alpha >= beta) {
                         return alpha;
@@ -165,7 +170,9 @@ public class Ai {
                 }
                 if (posCourante.coupValideRouge(i, num)) {
                     nextPosRouge = posCourante.getNextPosition(i, false);
+                    //redAlpha = Math.max(redAlpha, alphaBetaValue(nextPosRouge, redAlpha, beta, nextPosRouge.isIaTurn(), profondeur + 1, profondeurMax));
                     alpha = Math.max(alpha, alphaBetaValue(nextPosRouge, alpha, beta, nextPosRouge.isIaTurn(), profondeur + 1, profondeurMax));
+
                     if (alpha >= beta) {
                         return alpha;
                     }
@@ -177,15 +184,16 @@ public class Ai {
                     }
                 }
             }
-            //return Math.max(alphaBlue, alphaRed);
             return alpha;
+            //return Math.max(blueAlpha, redAlpha);
         } else {
             for (int i = 0; i < Board2.getSize(); i++) {
                 if (posCourante.coupValideBleu(i, num)) {
                     nextPosBleu = posCourante.getNextPosition(i, true); // pos_next devient la position courante, et on change le joueur
                     // même chose qu'avec les alpha, un par couleur
+                    //blueBeta = Math.min(blueBeta, alphaBetaValue(nextPosBleu, alpha, blueBeta, nextPosBleu.isIaTurn(), profondeur + 1, profondeurMax));
                     beta = Math.min(beta, alphaBetaValue(nextPosBleu, alpha, beta, nextPosBleu.isIaTurn(), profondeur + 1, profondeurMax));
-                    if (alpha <= beta) {
+                    if (beta <= alpha) {
                         return beta;
                     }
                 } else {
@@ -197,8 +205,10 @@ public class Ai {
                 }
                 if (posCourante.coupValideRouge(i, num)) {
                     nextPosRouge = posCourante.getNextPosition(i, false);
+                    //redBeta = Math.min(redBeta, alphaBetaValue(nextPosRouge, alpha, redBeta, nextPosRouge.isIaTurn(), profondeur + 1, profondeurMax));
                     beta = Math.min(beta, alphaBetaValue(nextPosRouge, alpha, beta, nextPosRouge.isIaTurn(), profondeur + 1, profondeurMax));
-                    if (alpha <= beta) {
+
+                    if (beta <= alpha) {
                         return beta;
                     }
                 } else {
@@ -210,6 +220,7 @@ public class Ai {
                 }
             }
             return beta;
+            //return Math.min(blueBeta, redBeta);
         }
     }
 

@@ -103,9 +103,9 @@ public class Board2 {
             CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
             executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
             int[] valuesNodes = new int[size];
-            int p = 6;
+            int p = 10;
             if(currentPos.nbcoupValide(Ai.numPlayer) <= 10 ){
-             p =7;
+             p = 11;
             }
             int[] cases = Ai.numPlayer == 1 ? case_J1 : case_J2;
             long time = System.currentTimeMillis();
@@ -117,7 +117,8 @@ public class Board2 {
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            valuesNodes[i2] = Ai.valeurMinMax2(currentchildrenB, iaTurn, 0, p2);;
+                            //valuesNodes[i2] = Ai.valeurMinMax2(currentchildrenB, iaTurn, 0, p2);
+                            valuesNodes[i2] =  ai.alphaBetaValue(currentchildrenB, 0, 0, iaTurn, 0, p2);
 //                            System.out.println("a thread " + Arrays.toString(valuesNodes));
                             latch.countDown();
                         }
@@ -135,7 +136,8 @@ public class Board2 {
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            valuesNodes[i2 + sizePlayerCase] =  Ai.valeurMinMax2(currentchildrenR, iaTurn, 0, p2);
+                            //valuesNodes[i2 + sizePlayerCase] =  Ai.valeurMinMax2(currentchildrenR, iaTurn, 0, p2);
+                            valuesNodes[i2] =  ai.alphaBetaValue(currentchildrenR, 0, 0, iaTurn, 0, p2);
 //                            System.out.println("a thread " + Arrays.toString(calculus));
                             latch.countDown();
                         }
