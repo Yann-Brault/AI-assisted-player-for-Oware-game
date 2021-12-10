@@ -105,7 +105,7 @@ public class Board2 {
             int[] valuesNodes = new int[size];
             int p = 8;
             if(currentPos.nbcoupValide(Ai.numPlayer) <= 10 ){
-             p = 3;
+             p = 10;
             }
             int[] cases = Ai.numPlayer == 1 ? case_J1 : case_J2;
             long time = System.currentTimeMillis();
@@ -164,10 +164,10 @@ public class Board2 {
             Ai.nbcut = 0;
 
             System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
-            int max = -100;
+            int max = Integer.MIN_VALUE;
             int idxmax = -1;
             for (int i = 0; i < size; i++) {
-                if (valuesNodes[i] > max) {
+                if (valuesNodes[i] >= max) {
                     max = valuesNodes[i];
                     idxmax = i;
                 }
