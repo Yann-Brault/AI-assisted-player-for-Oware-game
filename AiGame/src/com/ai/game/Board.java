@@ -53,14 +53,21 @@ public class Board {
 
                 return;
             }
+
             Position[] children = currentPos.getNextPositions(Ai.numPlayer);
+
             CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
             executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
             int[] valuesNodes = new int[size];
-            int p = 8;
-            if (currentPos.nbcoupValide(Ai.numPlayer) <= 10) {
-                p = 10;
-            }
+            int p = 5;
+//            if (currentPos.nbcoupValide(Ai.numPlayer) <= 10 && Ai.nbturn > 10 ) {
+//                p = 10;
+//            }
+//
+//            if(Ai.nbturn > 10 && Ai.nbnode < 1_000_000){
+//                p += 2;
+//            }
+            Ai.nbnode = 0;
 
             long time = System.currentTimeMillis();
             for (int i = 0; i < sizePlayerCase; i++) {
@@ -73,7 +80,7 @@ public class Board {
                         @Override
                         public void run() {
 
-                            valuesNodes[i2] = Ai.alphaBeta2(currentchildrenB, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
+                            valuesNodes[i2] = Ai.alphaBeta(currentchildrenB, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
                             latch.countDown();
                         }
 
@@ -87,11 +94,10 @@ public class Board {
                     final int p2 = p;
 
                     final Position currentchildrenR = children[i2];
-
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            valuesNodes[i2] = Ai.alphaBeta2(currentchildrenR, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
+                            valuesNodes[i2] = Ai.alphaBeta(currentchildrenR, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
                             latch.countDown();
                         }
 
@@ -99,6 +105,7 @@ public class Board {
 
 
                 } else {
+
                     valuesNodes[i + sizePlayerCase] = Integer.MIN_VALUE;
                 }
 
@@ -110,7 +117,7 @@ public class Board {
             System.out.println("l'ia a recherché avec une profondeur de " + (p + 1) + " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut);
             System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
             executor.shutdown();
-            Ai.nbnode = 0;
+
             Ai.nbcut = 0;
 
             System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
