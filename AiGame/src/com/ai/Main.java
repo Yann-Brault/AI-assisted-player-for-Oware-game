@@ -1,22 +1,33 @@
 package com.ai;
 
-import com.ai.Game2.Position2;
-import com.ai.ai.Ai;
+
 import com.ai.game.Board;
-import com.ai.Game2.Board2;
-import com.ai.game.Position;
+
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
+        Scanner sc = new Scanner(System.in);
 
-        Board2 b2 = new Board2(true);
+        boolean J1ia = false;
+        while (true) {
+            System.out.println("Ia commence ?");
+            String str = sc.nextLine();
+            if(str.equalsIgnoreCase("oui")){
+                J1ia = true;
+                break;
+            }
+            if(str.equalsIgnoreCase("non")){
+                break;
+            }
+        }
 
 
-        while ( !b2.getActualPosition().isFinalPosition()) {
+        Board b2 = new Board(J1ia);
+        while (!b2.getActualPosition().isFinalPosition()) {
             b2.play();
             System.out.println(b2);
-            //System.out.println(b2.getActualPosition().nbcoupValide(1));
             System.out.printf("ai score : %d\n", b2.getPionsPrisOrdi());
             System.out.printf("player score : %d\n", b2.getPionsPrisJoueur());
         }
