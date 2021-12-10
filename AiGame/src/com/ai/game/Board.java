@@ -59,14 +59,14 @@ public class Board {
             CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
             executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
             int[] valuesNodes = new int[size];
-            int p = 5;
-//            if (currentPos.nbcoupValide(Ai.numPlayer) <= 10 && Ai.nbturn > 10 ) {
-//                p = 10;
-//            }
-//
-//            if(Ai.nbturn > 10 && Ai.nbnode < 1_000_000){
-//                p += 2;
-//            }
+            int p = 8;
+            if (currentPos.nbcoupValide(Ai.numPlayer) <= 10 && Ai.nbturn > 10) {
+                p = 10;
+            }
+
+            if (Ai.nbturn > 10 && Ai.nbnode < 1_000_000) {
+                p += 2;
+            }
             Ai.nbnode = 0;
 
             long time = System.currentTimeMillis();
@@ -121,10 +121,10 @@ public class Board {
             Ai.nbcut = 0;
 
             System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
-            int max = Integer.MIN_VALUE;
+            long max = (long) Integer.MIN_VALUE - 2;
             int idxmax = -1;
             for (int i = 0; i < size; i++) {
-                if (valuesNodes[i] >= max) {
+                if (valuesNodes[i] > max && (currentPos.coupValideRouge(cases[i % sizePlayerCase], Ai.numPlayer) || currentPos.coupValideBleu(cases[i % sizePlayerCase], Ai.numPlayer))) {
                     max = valuesNodes[i];
                     idxmax = i;
                 }
@@ -282,7 +282,6 @@ public class Board {
     }
 
 
-
     public static int getSize() {
         return size;
     }
@@ -335,7 +334,6 @@ public class Board {
     public Position getActualPosition() {
         return new Position(tableauBleu, tableauRouge, iaTurn, iaJ1, getPionsPrisJoueur(), getPionsPrisOrdi());
     }
-
 
 
     @Override
