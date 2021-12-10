@@ -103,9 +103,9 @@ public class Board2 {
             CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
             executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
             int[] valuesNodes = new int[size];
-            int p = 10;
+            int p = 8;
             if(currentPos.nbcoupValide(Ai.numPlayer) <= 10 ){
-             p = 11;
+             p = 3;
             }
             int[] cases = Ai.numPlayer == 1 ? case_J1 : case_J2;
             long time = System.currentTimeMillis();
@@ -118,7 +118,7 @@ public class Board2 {
                         @Override
                         public void run() {
                             //valuesNodes[i2] = Ai.valeurMinMax2(currentchildrenB, iaTurn, 0, p2);
-                            valuesNodes[i2] =  ai.alphaBetaValue(currentchildrenB, 0, 0, iaTurn, 0, p2);
+                            valuesNodes[i2] =  Ai.alphaBeta2(currentchildrenB, false,Integer.MIN_VALUE,Integer.MAX_VALUE, 0, p2);
 //                            System.out.println("a thread " + Arrays.toString(valuesNodes));
                             latch.countDown();
                         }
@@ -126,18 +126,18 @@ public class Board2 {
                     });
 
                 } else {
-                    valuesNodes[i] = -100;
+                    valuesNodes[i] = Integer.MIN_VALUE;
                 }
                 if (currentPos.coupValideRouge(cases[i], Ai.numPlayer)) {
-                    final int i2 = i;
+                    final int i2 = i + sizePlayerCase;
                     final int p2 = p;
                     final int[] calculus = {-2};
                     final Position2 currentchildrenR = children[i2];
                     executor.submit(new Runnable() {
                         @Override
                         public void run() {
-                            //valuesNodes[i2 + sizePlayerCase] =  Ai.valeurMinMax2(currentchildrenR, iaTurn, 0, p2);
-                            valuesNodes[i2] =  ai.alphaBetaValue(currentchildrenR, 0, 0, iaTurn, 0, p2);
+//                            valuesNodes[i2 + sizePlayerCase] =  Ai.valeurMinMax2(currentchildrenR, iaTurn, 0, p2);
+                            valuesNodes[i2] =  Ai.alphaBeta2(currentchildrenR, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
 //                            System.out.println("a thread " + Arrays.toString(calculus));
                             latch.countDown();
                         }
@@ -146,21 +146,22 @@ public class Board2 {
 
 
                 } else {
-                    valuesNodes[i + sizePlayerCase] = -100;
+                    valuesNodes[i + sizePlayerCase] = Integer.MIN_VALUE;
                 }
 
 
 
             }
-            latch.await(2000,TimeUnit.MILLISECONDS); // attend la find es calculs
+            latch.await(); // attend la find es calculs 2000,TimeUnit.MILLISECONDS
 
 
 
-            System.out.println("l'ia a recherché avec une profondeur de " + (p+1) + " coups parmis " + Ai.nbnode + " noeuds.");
+            System.out.println("l'ia a recherché avec une profondeur de " + (p+1) + " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut);
             System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
             executor.shutdown();
             System.out.println(executor.isShutdown());
             Ai.nbnode = 0;
+            Ai.nbcut = 0;
 
             System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
             int max = -100;
