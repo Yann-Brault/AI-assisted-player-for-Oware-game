@@ -16,7 +16,7 @@ public class Ai {
 
 
 
-    public static int evaluate2(Position pos, boolean iaTurn, int Profondeur) {
+    public static int evaluate2(Position pos, boolean iaTurn, int Profondeur) { // todo mega evalutaion
 //        if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer) == 0) {
 //            return Integer.MIN_VALUE;
 //        } else if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer == 1 ? 2 : 1) == 0) {
