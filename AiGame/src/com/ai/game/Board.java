@@ -110,7 +110,6 @@ public class Board {
             System.out.println("l'ia a recherché avec une profondeur de " + (p + 1) + " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut);
             System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
             executor.shutdown();
-            System.out.println(executor.isShutdown());
             Ai.nbnode = 0;
             Ai.nbcut = 0;
 
