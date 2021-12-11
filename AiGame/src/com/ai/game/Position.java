@@ -83,6 +83,16 @@ public class Position {
         return false;
     }
 
+    public int nbgrainePlayer(int numplayer){
+        int[] cases = numplayer == 1 ? case_J1 : case_J2;
+        int num = 0;
+        for(int i = 0 ; i < sizePlayerCase; i++){
+            num += tableauRouge[cases[i]-1] + tableauBleu[cases[i]-1];
+        }
+        return num;
+    }
+
+
     public Position[] getNextPositions(int numPlayer) {
         Position[] array = new Position[size];
         if (numPlayer == 1) {

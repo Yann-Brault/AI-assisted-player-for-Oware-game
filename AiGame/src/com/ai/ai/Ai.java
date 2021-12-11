@@ -3,33 +3,40 @@ package com.ai.ai;
 import com.ai.game.Board;
 import com.ai.game.Position;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Ai {
     private int score;
-    public static int nbnode = 0;
+    public static AtomicInteger nbnode = new AtomicInteger(0);
     public static int nbcut = 0;
     public static int nbturn = 0;
     public static int numPlayer = 0;
+    public static int numOponent = 0;
 
     public Ai(int nb) {
         this.numPlayer = nb;
+        numOponent = nb == 1 ? 2 : 1;
     }
 
 
 
     public static int evaluate2(Position pos, boolean iaTurn, int Profondeur) { // todo mega evalutaion
-//        if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer) == 0) {
-//            return Integer.MIN_VALUE;
-//        } else if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer == 1 ? 2 : 1) == 0) {
-//            return Integer.MAX_VALUE;
-//        } else if (pos.isFinalPosition() && iaTurn) {
-//            if (pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur() > 0) {
-//                return 999;
-//            } else {
-//                return -999;
-//            }
-//        }
-        return pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur();
+        if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer) == 0) {
+            return Integer.MIN_VALUE;
+        } else if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer == 1 ? 2 : 1) == 0) {
+            return Integer.MAX_VALUE;
+        }
+        else if (pos.isFinalPosition() && iaTurn) {
+            if (pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur() > 0) {
+                return 999;
+            } else {
+                return -999;
+            }
+        }
+//        return pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur();
+        return (pos.nbgrainePlayer(numPlayer) + pos.getPionsPrisOrdi() )-(pos.nbgrainePlayer(numOponent) + pos.getPionsPrisJoueur());
     }
+
 
     public static int evaluateEmptyHole(Position pos) {
         int nbHolesEmpty = 0;
@@ -49,10 +56,8 @@ public class Ai {
             return -nbHolesEmpty;
         }
     }
-
-
     public static int valeurMinMax2(Position posCourante, boolean iaTurn, int profondeur, int profondeurMax) {
-        nbnode++;
+//        nbnode++;
         int[] tabValeursRouge = new int[Board.getSize()];
         int[] tabValeurBleu = new int[Board.getSize()];
         Position nextPosBleu;
@@ -115,8 +120,9 @@ public class Ai {
         return res;
     }
 
+
     public static int alphaBeta(Position posCourante, boolean iaTurn, int alpha, int beta, int profondeur, int profondeurMax) {
-        nbnode++;
+        nbnode.addAndGet(1);
 
         int num = numPlayer;
         int numOponent = num == 1 ? 2 : 1;
@@ -145,11 +151,15 @@ public class Ai {
                             value = Math.max(value, evalR);
                         }
                     }
-                    alpha = Math.max(alpha, value);
                     if (beta <= alpha) {
                         nbcut++;
                         return value;
                     }
+
+                    alpha = Math.max(alpha, value);
+
+
+
                 }
             }
 
@@ -175,12 +185,12 @@ public class Ai {
                         }
                     }
 
-                    beta = Math.min(beta, value);
-
                     if (beta <= alpha) {
                         nbcut++;
                         return value;
                     }
+                    beta = Math.min(beta, value);
+
                 }
             }
             return value;

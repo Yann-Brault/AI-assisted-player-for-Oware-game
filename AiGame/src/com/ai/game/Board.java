@@ -59,15 +59,15 @@ public class Board {
             CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
             executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
             int[] valuesNodes = new int[size];
-            int p = 8;
+            int p = 9;
             if (currentPos.nbcoupValide(Ai.numPlayer) <= 10 && Ai.nbturn > 10) {
                 p = 10;
             }
 
-            if (Ai.nbturn > 10 && Ai.nbnode < 1_000_000) {
+            if (Ai.nbturn > 10 && Ai.nbnode.get() < 1_000_000) {
                 p += 2;
             }
-            Ai.nbnode = 0;
+            Ai.nbnode.set(0);
 
             long time = System.currentTimeMillis();
             for (int i = 0; i < sizePlayerCase; i++) {
