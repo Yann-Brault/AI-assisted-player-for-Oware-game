@@ -60,8 +60,14 @@ public class Board {
             executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
             int[] valuesNodes = new int[size];
             int p = 9;
-            if (currentPos.nbcoupValide(Ai.numPlayer) <= 10 && Ai.nbturn > 10) {
+            if(Ai.nbturn <= 9  ){
+                p = 7;
+            }
+            if (currentPos.nbcoupValide(Ai.numPlayer) < 10 && Ai.nbturn > 10) {
                 p = 10;
+            }
+            if ( Ai.nbturn >= 70 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 40) {
+                p = 12;
             }
 
             if (Ai.nbturn > 10 && Ai.nbnode.get() < 1_000_000) {
@@ -339,6 +345,7 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("turn : ").append(Ai.nbturn).append("\n");
         sb.append(" ".repeat(7));
         for (int i = 1; i < size / 2 + 1; i++) {
             sb.append(String.format("%d", i));
