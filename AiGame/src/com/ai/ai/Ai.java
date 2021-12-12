@@ -33,8 +33,8 @@ public class Ai {
                 return -999;
             }
         }
-//        return pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur();
-        return (pos.nbgrainePlayer(numPlayer) + pos.getPionsPrisOrdi() )-(pos.nbgrainePlayer(numOponent) + pos.getPionsPrisJoueur());
+//        return pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur();  pos.nbgrainePlayer(numPlayer) +
+        return ( pos.getPionsPrisOrdi() )-(pos.nbgrainePlayer(numOponent) + pos.getPionsPrisJoueur());
     }
 
 

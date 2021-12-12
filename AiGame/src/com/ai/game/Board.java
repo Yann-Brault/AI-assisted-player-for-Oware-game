@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class Board {
@@ -59,7 +60,7 @@ public class Board {
             CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
             executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
             int[] valuesNodes = new int[size];
-            int p = 9;
+            int p = 8;
             if(Ai.nbturn <= 9  ){
                 p = 7;
             }
@@ -70,7 +71,7 @@ public class Board {
                 p = 12;
             }
 
-            if (Ai.nbturn > 10 && Ai.nbnode.get() < 1_000_000) {
+            if (Ai.nbturn > 10 && Ai.nbnode.get() < 1_000_000 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 38) {
                 p += 2;
             }
             Ai.nbnode.set(0);
@@ -117,11 +118,11 @@ public class Board {
 
 
             }
-            latch.await(); // attend la find es calculs 2000,TimeUnit.MILLISECONDS
 
-
-            System.out.println("l'ia a recherché avec une profondeur de " + (p + 1) + " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut);
-            System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
+            latch.await(); // attend la find es calculs 2500,TimeUnit.MILLISECONDS
+            long t2 = System.currentTimeMillis();
+            System.out.println("l'ia a recherché avec une profondeur de " + (p + 7) ); //+ " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut
+            System.out.println("en t = " + (t2 - time) + "ms");
             executor.shutdown();
 
             Ai.nbcut = 0;
