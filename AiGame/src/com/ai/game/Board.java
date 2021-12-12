@@ -62,7 +62,7 @@ public class Board {
             int[] valuesNodes = new int[size];
             int p = 8;
             if(Ai.nbturn <= 9  ){
-                p = 8;
+                p = 7;
             }
             if (currentPos.nbcoupValide(Ai.numPlayer) < 10 && Ai.nbturn > 10) {
                 p = 10;
@@ -121,13 +121,13 @@ public class Board {
 
             latch.await(); // attend la find es calculs 2500,TimeUnit.MILLISECONDS
             long t2 = System.currentTimeMillis();
-            System.out.println("l'ia a recherché avec une profondeur de " + (p + 7) ); //+ " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut
+            System.out.println("l'ia a recherché avec une profondeur de " + (p + 8) ); //+ " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut
             System.out.println("en t = " + (t2 - time) + "ms");
             executor.shutdown();
 
             Ai.nbcut = 0;
 
-            System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
+//            System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
             long max = (long) Integer.MIN_VALUE - 2;
             int idxmax = -1;
             for (int i = 0; i < size; i++) {
