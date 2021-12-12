@@ -62,7 +62,7 @@ public class Board {
             int[] valuesNodes = new int[size];
             int p = 8;
             if(Ai.nbturn <= 9  ){
-                p = 7;
+                p = 8;
             }
             if (currentPos.nbcoupValide(Ai.numPlayer) < 10 && Ai.nbturn > 10) {
                 p = 10;
@@ -186,7 +186,7 @@ public class Board {
                 System.out.println("player choose a hole ?");
                 String str = sc.nextLine();
                 String[] entry = str.split(" ");
-                if (entry.length == 0 || entry.length > 2) { // Si taille entrée non valide on boucle
+                if (entry.length < 2 || entry.length > 3) { // Si taille entrée non valide on boucle
                     continue;
                 }
                 try {
