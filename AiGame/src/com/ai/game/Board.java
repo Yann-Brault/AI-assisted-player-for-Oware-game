@@ -65,7 +65,7 @@ public class Board {
                 p = 7;
             }
             if (currentPos.nbcoupValide(Ai.numPlayer) < 10 && Ai.nbturn > 10) {
-                p = 10;
+                p = 9;
             }
 
           //  if ( Ai.nbturn >= 70 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 40) {
@@ -123,7 +123,7 @@ public class Board {
 
             latch.await(); // attend la find es calculs 2500,TimeUnit.MILLISECONDS
             long t2 = System.currentTimeMillis();
-            System.out.println("l'ia a recherché avec une profondeur de " + (p + 8) ); //+ " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut
+            System.out.println("l'ia a recherché avec une profondeur de " + (p + 1 )); //+ " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut
             System.out.println("en t = " + (t2 - time) + "ms");
             executor.shutdown();
 

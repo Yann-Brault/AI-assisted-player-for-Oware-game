@@ -18,25 +18,39 @@ public class Ai {
         numOponent = nb == 1 ? 2 : 1;
     }
     public static int evaluate2(Position pos, boolean iaTurn, int Profondeur) { // todo mega evalutaion
-        if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer) == 0) {
-            return Integer.MIN_VALUE;
-        } else if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer == 1 ? 2 : 1) == 0) {
+        if(pos.getPionsPrisOrdi() >= 33){
             return Integer.MAX_VALUE;
         }
-        else if (pos.isFinalPosition() && iaTurn) {
+        if(pos.getPionsPrisJoueur() >= 33){
+            return Integer.MIN_VALUE;
+        }
+        if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer) == 0) {
+            return Integer.MIN_VALUE;
+        } else if (pos.isFinalPosition() && pos.nbcoupValide(numOponent) == 0) {
+            return Integer.MAX_VALUE;
+        }
+        else if (pos.isFinalPosition()) {
+            if(pos.getPionsPrisOrdi() >= 33 ){
+                return Integer.MAX_VALUE;
+            }
             if (pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur() > 0) {
-                return 999;
+                return Integer.MAX_VALUE;
             } else {
-                return -999;
+                return Integer.MIN_VALUE;
             }
         }
-        int val = (pos.getPionsPrisOrdi()  - 32) - (pos.getPionsPrisJoueur()+ pos.nbgrainePlayer(numOponent)) * 2  + pos.nbgrainePlayer(numPlayer);
+        int val = 0;
+        if(pos.nbGrainesPlayerRouge(numPlayer)  + pos.nbGrainesPlayerRouge(numOponent) <= 4 ){
+        val -= 100;
+        }
+        val += (pos.getPionsPrisOrdi() ) - (pos.getPionsPrisJoueur()+ pos.nbgrainePlayer(numOponent)) * 2  + pos.nbgrainePlayer(numPlayer) - pos.nbGrainesPlayerBleu(numOponent) + pos.nbGrainesPlayerBleu(numPlayer);
         if (iaTurn){
             return val - pos.nbCasePrenable() * 2 ;
         }
         else {
-            return val - pos.nbCasePrenable() * 2 ;
+            return val - pos.nbCasePrenable() * 2  + pos.nbComboCasePrenable()* 4 ;
         }
+
      /**   if(iaTurn){
             return (pos.getPionsPrisOrdi()) - (pos.getPionsPrisJoueur() + pos.nbgrainePlayer(numOponent));
         }

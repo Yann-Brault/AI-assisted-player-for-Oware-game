@@ -124,15 +124,29 @@ public class Position {
     public int nbCasePrenable(){
         int num = 0;
         for(int i = 0 ; i < size; i++){
-            if( tableauBleu[i] == 2 ||  tableauBleu[i] == 1 ){
+            if( tableauBleu[i] + tableauRouge[i] == 2 || tableauBleu[i] + tableauRouge[i] == 1 ){
                 num ++;
-            }
-            if(tableauRouge[i] == 2 ||  tableauRouge[i] == 1 ){
-                num++;
             }
         }
         return num;
     }
+    public int nbComboCasePrenable(){
+        int maxPrenable = 0 ;
+        int num = 0 ;
+        for(int i = 0 ; i < size; i++){
+            if( tableauBleu[i] + tableauRouge[i] == 2 || tableauBleu[i] + tableauRouge[i] == 1 ){
+                num ++;
+            }
+            else{
+                if(num > maxPrenable){
+                    maxPrenable = num;
+                }
+                num = 0 ;
+            }
+        }
+        return maxPrenable;
+    }
+
 
     public Position[] getNextPositions(int numPlayer) {
         Position[] array = new Position[size];
