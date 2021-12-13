@@ -91,7 +91,48 @@ public class Position {
         }
         return num;
     }
+    public int nbGrainesPlayerRouge(int numplayer){
+        int[] cases = numplayer == 1 ? case_J1 : case_J2;
+        int num = 0;
+        for(int i = 0 ; i < sizePlayerCase; i++){
+            num += tableauRouge[cases[i]-1];
+        }
+        return num;
+    }
+    public int nbGrainesPlayerBleu(int numplayer){
+        int[] cases = numplayer == 1 ? case_J1 : case_J2;
+        int num = 0;
+        for(int i = 0 ; i < sizePlayerCase; i++){
+            num += tableauBleu[cases[i]-1];
+        }
+        return num;
+    }
+    public int nbCasePrenablePlayer(int numplayer ){
+        int[] cases = numplayer == 1 ? case_J1 : case_J2;
+        int num = 0;
+        for(int i = 0 ; i < sizePlayerCase; i++){
+            if( tableauBleu[cases[i]-1] == 2 ||  tableauBleu[cases[i]-1] == 1 ){
+                num ++;
+            }
+            if( tableauRouge[cases[i]-1] == 2 ||  tableauRouge[cases[i]-1] == 1 ){
 
+            }
+        }
+        return num;
+
+    }
+    public int nbCasePrenable(){
+        int num = 0;
+        for(int i = 0 ; i < size; i++){
+            if( tableauBleu[i] == 2 ||  tableauBleu[i] == 1 ){
+                num ++;
+            }
+            if(tableauRouge[i] == 2 ||  tableauRouge[i] == 1 ){
+                num++;
+            }
+        }
+        return num;
+    }
 
     public Position[] getNextPositions(int numPlayer) {
         Position[] array = new Position[size];

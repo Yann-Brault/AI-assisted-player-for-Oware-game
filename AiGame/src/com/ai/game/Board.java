@@ -67,13 +67,15 @@ public class Board {
             if (currentPos.nbcoupValide(Ai.numPlayer) < 10 && Ai.nbturn > 10) {
                 p = 10;
             }
-            if ( Ai.nbturn >= 70 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 40) {
-                p = 12;
-            }
 
-            if (Ai.nbturn > 10 && Ai.nbnode.get() < 1_000_000 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 38) {
-                p += 2;
-            }
+          //  if ( Ai.nbturn >= 70 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 40) {
+            //    p = 12;
+            //}
+
+            //  if (Ai.nbturn > 10 && Ai.nbnode.get() < 1_000_000 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 38) {
+          //      p += 2;
+           // }
+
             Ai.nbnode.set(0);
 
             long time = System.currentTimeMillis();
@@ -127,7 +129,7 @@ public class Board {
 
             Ai.nbcut = 0;
 
-//            System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
+            System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
             long max = (long) Integer.MIN_VALUE - 2;
             int idxmax = -1;
             for (int i = 0; i < size; i++) {
