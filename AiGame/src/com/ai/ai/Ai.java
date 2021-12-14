@@ -14,21 +14,24 @@ public class Ai {
     public static int numOponent = 0;
 
     public Ai(int nb) {
-        this.numPlayer = nb;
+        numPlayer = nb;
         numOponent = nb == 1 ? 2 : 1;
     }
     public static int evaluate2(Position pos, boolean iaTurn, int Profondeur) { // todo mega evalutaion
         if(pos.getPionsPrisOrdi() >= 33){
             return Integer.MAX_VALUE;
         }
-        if(pos.getPionsPrisJoueur() >= 33){
-            return Integer.MIN_VALUE;
-        }
-        if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer) == 0) {
-            return Integer.MIN_VALUE;
-        } else if (pos.isFinalPosition() && pos.nbcoupValide(numOponent) == 0) {
-            return Integer.MAX_VALUE;
-        }
+        if(pos.getPionsPrisJoueur() >= 33){return Integer.MIN_VALUE;}
+        if (pos.isFinalPosition() && pos.nbcoupValide(numOponent) == 0) {
+            if(pos.nbGrainesTotal() < 8  ){
+                if(pos.getPionsPrisOrdi() - pos.getPionsPrisJoueur() < 0){
+                    return Integer.MIN_VALUE;}
+                else{
+                    return Integer.MAX_VALUE;
+                }
+            }
+            else{return Integer.MAX_VALUE;}}
+        if (pos.isFinalPosition() && pos.nbcoupValide(numPlayer) == 0) {return Integer.MIN_VALUE;}
         else if (pos.isFinalPosition()) {
             if(pos.getPionsPrisOrdi() >= 33 ){
                 return Integer.MAX_VALUE;
@@ -44,8 +47,8 @@ public class Ai {
         val -= 100;
         }
         val += (pos.getPionsPrisOrdi() ) - (pos.getPionsPrisJoueur()+ pos.nbgrainePlayer(numOponent)) * 2  + pos.nbgrainePlayer(numPlayer) - pos.nbGrainesPlayerBleu(numOponent) + pos.nbGrainesPlayerBleu(numPlayer);
-        if (iaTurn){
-            return val - pos.nbCasePrenable() * 2 ;
+        if (pos.isIaTurn()){
+            return val - pos.nbCasePrenable() * 2 - pos.nbComboCasePrenable()* 4;
         }
         else {
             return val - pos.nbCasePrenable() * 2  + pos.nbComboCasePrenable()* 4 ;

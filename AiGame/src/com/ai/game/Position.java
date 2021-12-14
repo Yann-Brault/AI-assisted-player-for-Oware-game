@@ -1,5 +1,7 @@
 package com.ai.game;
 
+import java.util.Arrays;
+
 public class Position {
     private final static int size = 16;
     private final int[] tableauBleu = new int[size];
@@ -146,7 +148,9 @@ public class Position {
         }
         return maxPrenable;
     }
-
+    public int nbGrainesTotal(){
+        return Arrays.stream(tableauBleu).sum() + Arrays.stream(tableauRouge).sum();
+    }
 
     public Position[] getNextPositions(int numPlayer) {
         Position[] array = new Position[size];

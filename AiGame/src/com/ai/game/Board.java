@@ -133,10 +133,19 @@ public class Board {
             long max = (long) Integer.MIN_VALUE - 2;
             int idxmax = -1;
             for (int i = 0; i < size; i++) {
-                if (valuesNodes[i] > max && (currentPos.coupValideRouge(cases[i % sizePlayerCase], Ai.numPlayer) || currentPos.coupValideBleu(cases[i % sizePlayerCase], Ai.numPlayer))) {
-                    max = valuesNodes[i];
-                    idxmax = i;
+                if(i < sizePlayerCase){
+                    if (valuesNodes[i] > max && (currentPos.coupValideBleu(cases[i % sizePlayerCase], Ai.numPlayer))) {
+                        max = valuesNodes[i];
+                        idxmax = i;
+                    }
                 }
+                else{
+                    if (valuesNodes[i] > max && (currentPos.coupValideRouge(cases[i % sizePlayerCase], Ai.numPlayer))) {
+                        max = valuesNodes[i];
+                        idxmax = i;
+                    }
+                }
+
             }
             if (Ai.numPlayer == 1) {
                 if (idxmax >= sizePlayerCase) {
@@ -148,7 +157,7 @@ public class Board {
                     colorToPlay = true;
                 }
 
-            } else if (ai.numPlayer == 2) {
+            } else if (Ai.numPlayer == 2) {
                 if (idxmax >= sizePlayerCase) {
                     holeToStartFrom = case_J2[idxmax - sizePlayerCase] - 1;
                     colorToPlay = false;
