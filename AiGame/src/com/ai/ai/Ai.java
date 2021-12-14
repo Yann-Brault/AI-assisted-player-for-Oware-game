@@ -55,11 +55,11 @@ public class Ai {
         val += (pos.getPionsPrisOrdi()) - (pos.getPionsPrisJoueur() + pos.nbgrainePlayer(numOponent)) * 2 + pos.nbgrainePlayer(numPlayer) - pos.nbGrainesPlayerBleu(numOponent) + pos.nbGrainesPlayerBleu(numPlayer);
         if (pos.isIaTurn()) {
             if (numPlayer == 2) {
-                return val - pos.nbCasePrenable() * 4 - pos.nbComboCasePrenable() * 4;
+                return val + pos.nbCasePrenable() * 4 - pos.nbComboCasePrenable() * 4;
             }
-            return val - pos.nbCasePrenable() * 2 - pos.nbComboCasePrenable() * 4;
+            return val +  pos.nbCasePrenable() * 2 - pos.nbComboCasePrenable() * 4;
         } else {
-            return val - pos.nbCasePrenable() * 2 + pos.nbComboCasePrenable() * 4;
+            return val - pos.nbCasePrenable() * 4 + pos.nbComboCasePrenable() * 4;
         }
 
         /**   if(iaTurn){

@@ -58,22 +58,26 @@ public class Board {
             Position[] children = currentPos.getNextPositions(Ai.numPlayer);
             int processors = Runtime.getRuntime().availableProcessors();
             CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
-            executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
+            executor = Executors.newFixedThreadPool(processors);
             int[] valuesNodes = new int[size];
             int p = 8;
-            if(Ai.nbturn <= 9  ){
+            if(Ai.nbturn <= 11  ){
                 p = 7;
             }
-            if(Ai.nbturn <= 3  ){
+            if(Ai.nbturn <= 1  ){
                 p = 6;
             }
             if (currentPos.nbcoupValide(Ai.numPlayer) < 10 && Ai.nbturn > 11) {
                 p = 10;
             }
 
-                if ( Ai.nbturn >= 70 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 40) {
+
+                if ( Ai.nbturn >= 80 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 40) {
                 p = 11;
             }
+//                if(Ai.nbturn == 1 && iaJ1){
+//                p = 7;
+//            }
 
             //  if (Ai.nbturn > 10 && Ai.nbnode.get() < 1_000_000 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 38) {
           //      p += 2;
