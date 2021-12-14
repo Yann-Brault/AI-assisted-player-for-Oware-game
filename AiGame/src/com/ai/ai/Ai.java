@@ -62,6 +62,7 @@ public class Ai {
             return val - pos.nbCasePrenable() * 2 + pos.nbComboCasePrenable() * 4;
         }
 
+
         /**   if(iaTurn){
          return (pos.getPionsPrisOrdi()) - (pos.getPionsPrisJoueur() + pos.nbgrainePlayer(numOponent));
          }
