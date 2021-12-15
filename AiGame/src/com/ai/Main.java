@@ -10,6 +10,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         Scanner sc = new Scanner(System.in);
 
+
         boolean J1ia = false;
         while (true) {
             System.out.println("Ia commence ?");

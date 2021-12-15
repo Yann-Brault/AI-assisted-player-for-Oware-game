@@ -1,5 +1,7 @@
 package com.ai.game;
 
+import java.util.Arrays;
+
 public class Position {
     private final static int size = 16;
     private final int[] tableauBleu = new int[size];
@@ -81,6 +83,73 @@ public class Position {
             return false;
         }
         return false;
+    }
+
+    public int nbgrainePlayer(int numplayer){
+        int[] cases = numplayer == 1 ? case_J1 : case_J2;
+        int num = 0;
+        for(int i = 0 ; i < sizePlayerCase; i++){
+            num += tableauRouge[cases[i]-1] + tableauBleu[cases[i]-1];
+        }
+        return num;
+    }
+    public int nbGrainesPlayerRouge(int numplayer){
+        int[] cases = numplayer == 1 ? case_J1 : case_J2;
+        int num = 0;
+        for(int i = 0 ; i < sizePlayerCase; i++){
+            num += tableauRouge[cases[i]-1];
+        }
+        return num;
+    }
+    public int nbGrainesPlayerBleu(int numplayer){
+        int[] cases = numplayer == 1 ? case_J1 : case_J2;
+        int num = 0;
+        for(int i = 0 ; i < sizePlayerCase; i++){
+            num += tableauBleu[cases[i]-1];
+        }
+        return num;
+    }
+    public int nbCasePrenablePlayer(int numplayer ){
+        int[] cases = numplayer == 1 ? case_J1 : case_J2;
+        int num = 0;
+        for(int i = 0 ; i < sizePlayerCase; i++){
+            if( tableauBleu[cases[i]-1] == 2 ||  tableauBleu[cases[i]-1] == 1 ){
+                num ++;
+            }
+            if( tableauRouge[cases[i]-1] == 2 ||  tableauRouge[cases[i]-1] == 1 ){
+
+            }
+        }
+        return num;
+
+    }
+    public int nbCasePrenable(){
+        int num = 0;
+        for(int i = 0 ; i < size; i++){
+            if( tableauBleu[i] + tableauRouge[i] == 2 || tableauBleu[i] + tableauRouge[i] == 1 ){
+                num ++;
+            }
+        }
+        return num;
+    }
+    public int nbComboCasePrenable(){
+        int maxPrenable = 0 ;
+        int num = 0 ;
+        for(int i = 0 ; i < size; i++){
+            if( tableauBleu[i] + tableauRouge[i] == 2 || tableauBleu[i] + tableauRouge[i] == 1 ){
+                num ++;
+            }
+            else{
+                if(num > maxPrenable){
+                    maxPrenable = num;
+                }
+                num = 0 ;
+            }
+        }
+        return maxPrenable;
+    }
+    public int nbGrainesTotal(){
+        return Arrays.stream(tableauBleu).sum() + Arrays.stream(tableauRouge).sum();
     }
 
     public Position[] getNextPositions(int numPlayer) {

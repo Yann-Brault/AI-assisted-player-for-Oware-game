@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class Board {
@@ -55,19 +56,34 @@ public class Board {
             }
 
             Position[] children = currentPos.getNextPositions(Ai.numPlayer);
-
+            int processors = Runtime.getRuntime().availableProcessors();
             CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
-            executor = Executors.newFixedThreadPool(currentPos.nbcoupValide(Ai.numPlayer));
+            executor = Executors.newFixedThreadPool(processors);
             int[] valuesNodes = new int[size];
             int p = 8;
-            if (currentPos.nbcoupValide(Ai.numPlayer) <= 10 && Ai.nbturn > 10) {
+            if(Ai.nbturn <= 11  ){
+                p = 7;
+            }
+            if(Ai.nbturn <= 1  ){
+                p = 6;
+            }
+            if (currentPos.nbcoupValide(Ai.numPlayer) < 10 && Ai.nbturn > 11) {
                 p = 10;
             }
 
-            if (Ai.nbturn > 10 && Ai.nbnode < 1_000_000) {
-                p += 2;
+
+                if ( Ai.nbturn >= 80 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 40) {
+                p = 11;
             }
-            Ai.nbnode = 0;
+//                if(Ai.nbturn == 1 && iaJ1){
+//                p = 7;
+//            }
+
+            //  if (Ai.nbturn > 10 && Ai.nbnode.get() < 1_000_000 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 38) {
+          //      p += 2;
+           // }
+
+            Ai.nbnode.set(0);
 
             long time = System.currentTimeMillis();
             for (int i = 0; i < sizePlayerCase; i++) {
@@ -111,11 +127,11 @@ public class Board {
 
 
             }
-            latch.await(); // attend la find es calculs 2000,TimeUnit.MILLISECONDS
 
-
-            System.out.println("l'ia a recherché avec une profondeur de " + (p + 1) + " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut);
-            System.out.println("en t = " + (System.currentTimeMillis() - time) + "ms");
+            latch.await(); // attend la find es calculs 2500,TimeUnit.MILLISECONDS
+            long t2 = System.currentTimeMillis();
+            System.out.println("l'ia a recherché avec une profondeur de " + (p + 1 )); //+ " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut
+            System.out.println("en t = " + (t2 - time) + "ms");
             executor.shutdown();
 
             Ai.nbcut = 0;
@@ -124,10 +140,19 @@ public class Board {
             long max = (long) Integer.MIN_VALUE - 2;
             int idxmax = -1;
             for (int i = 0; i < size; i++) {
-                if (valuesNodes[i] > max && (currentPos.coupValideRouge(cases[i % sizePlayerCase], Ai.numPlayer) || currentPos.coupValideBleu(cases[i % sizePlayerCase], Ai.numPlayer))) {
-                    max = valuesNodes[i];
-                    idxmax = i;
+                if(i < sizePlayerCase){
+                    if (valuesNodes[i] > max && (currentPos.coupValideBleu(cases[i % sizePlayerCase], Ai.numPlayer))) {
+                        max = valuesNodes[i];
+                        idxmax = i;
+                    }
                 }
+                else{
+                    if (valuesNodes[i] > max && (currentPos.coupValideRouge(cases[i % sizePlayerCase], Ai.numPlayer))) {
+                        max = valuesNodes[i];
+                        idxmax = i;
+                    }
+                }
+
             }
             if (Ai.numPlayer == 1) {
                 if (idxmax >= sizePlayerCase) {
@@ -139,7 +164,7 @@ public class Board {
                     colorToPlay = true;
                 }
 
-            } else if (ai.numPlayer == 2) {
+            } else if (Ai.numPlayer == 2) {
                 if (idxmax >= sizePlayerCase) {
                     holeToStartFrom = case_J2[idxmax - sizePlayerCase] - 1;
                     colorToPlay = false;
@@ -179,7 +204,7 @@ public class Board {
                 System.out.println("player choose a hole ?");
                 String str = sc.nextLine();
                 String[] entry = str.split(" ");
-                if (entry.length == 0 || entry.length > 2) { // Si taille entrée non valide on boucle
+                if (entry.length < 2 || entry.length > 3) { // Si taille entrée non valide on boucle
                     continue;
                 }
                 try {
@@ -339,6 +364,7 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        sb.append("turn : ").append(Ai.nbturn).append("\n");
         sb.append(" ".repeat(7));
         for (int i = 1; i < size / 2 + 1; i++) {
             sb.append(String.format("%d", i));
