@@ -7,38 +7,37 @@ import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 
 public class Board {
     private final static int size = 16;
+    private final static int sizePlayerCase = 8;
     private final static int initialGraine = 2;
+    private final static int[] case_J1 = new int[]{1, 3, 5, 7, 9, 11, 13, 15}; // Player one got the odd holes
+    private final static int[] case_J2 = new int[]{2, 4, 6, 8, 10, 12, 14, 16}; // PLayer two got the even holes
     private final int[] tableauBleu = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine};
     private final int[] tableauRouge = new int[]{initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine, initialGraine};
+    private int PionsPrisJoueur; // Seeds taken by the player
+    private int PionsPrisOrdi; // Seeds taken by the AI
+    private final Ai ai;
     private boolean iaTurn;
     private final boolean iaJ1;
-    private int PionsPrisJoueur; //pions pris par le joueur
-    private int PionsPrisOrdi; // pions pris par l'ordi
-    private final static int[] case_J1 = new int[]{1, 3, 5, 7, 9, 11, 13, 15};
-    private final static int[] case_J2 = new int[]{2, 4, 6, 8, 10, 12, 14, 16};
-    private final static int sizePlayerCase = 8;
-    private final Ai ai;
 
     public Board(boolean iaBegin) {
-
         this.iaTurn = iaBegin;
         this.iaJ1 = iaBegin;
         this.ai = new Ai(iaBegin ? 1 : 2);
     }
 
     public void play() throws InterruptedException {
-        ExecutorService executor = null;
-        Ai.nbturn++;
+        ExecutorService executor;
+        Ai.nbTurn++;
         int seedTaken = 0;
         int holeToStartFrom = 0;
-        boolean colorToPlay = false; // false implique de jouer rouge
+        boolean colorToPlay = false; // false means red
 
-        if (iaTurn) { // choix du trou de l'ia
+        //the AI player choose the hole he'll play
+        if (iaTurn) {
             Position currentPos = this.getActualPosition();
             int[] cases = Ai.numPlayer == 1 ? case_J1 : case_J2;
             if (currentPos.isFamine(Ai.numPlayer, cases)) {
@@ -50,114 +49,92 @@ public class Board {
 
                 }
                 addPionsPrisJoueur(result);
-
-
                 return;
             }
-
+            //children array contains all postions following the current one for the actual player
             Position[] children = currentPos.getNextPositions(Ai.numPlayer);
+
+            //parallelism mechanism
             int processors = Runtime.getRuntime().availableProcessors();
             CountDownLatch latch = new CountDownLatch(currentPos.nbcoupValide(Ai.numPlayer));
             executor = Executors.newFixedThreadPool(processors);
+
             int[] valuesNodes = new int[size];
+            //dynamic deep
             int p = 8;
-            if(Ai.nbturn <= 11  ){
+            if (Ai.nbTurn <= 11) {
                 p = 7;
             }
-            if(Ai.nbturn <= 1  ){
+            if (Ai.nbTurn <= 1) {
                 p = 6;
             }
-            if (currentPos.nbcoupValide(Ai.numPlayer) < 10 && Ai.nbturn > 11) {
+            if (currentPos.nbcoupValide(Ai.numPlayer) < 10 && Ai.nbTurn > 11) {
                 p = 10;
             }
-
-
-                if ( Ai.nbturn >= 80 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 40) {
+            if (Ai.nbTurn >= 80 && this.getActualPosition().nbGrainePlayer(1) + this.getActualPosition().nbGrainePlayer(2) < 40) {
                 p = 11;
             }
-//                if(Ai.nbturn == 1 && iaJ1){
-//                p = 7;
-//            }
-
-            //  if (Ai.nbturn > 10 && Ai.nbnode.get() < 1_000_000 && this.getActualPosition().nbgrainePlayer(1) + this.getActualPosition().nbgrainePlayer(2) < 38) {
-          //      p += 2;
-           // }
-
-            Ai.nbnode.set(0);
-
+            Ai.nbNode.set(0); // number of nodes explored
             long time = System.currentTimeMillis();
             for (int i = 0; i < sizePlayerCase; i++) {
+                //if the position is blue legal we explore it with minmax + alpha beta pruning and the value goes in valuesNode
                 if (currentPos.coupValideBleu(cases[i], Ai.numPlayer)) {
-                    final int i2 = i;
+                    final int i2 = i; // needed because the executor only take copies
                     final int p2 = p;
                     final Position currentchildrenB = children[i2];
-
-                    executor.submit(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            valuesNodes[i2] = Ai.alphaBeta(currentchildrenB, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
-                            latch.countDown();
-                        }
-
+                    executor.submit(() -> {
+                        valuesNodes[i2] = Ai.alphaBeta(currentchildrenB, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
+                        latch.countDown();
                     });
-
+                    //else we assigne the minimal value possible
                 } else {
                     valuesNodes[i] = Integer.MIN_VALUE;
                 }
+                //same thing with the red
                 if (currentPos.coupValideRouge(cases[i], Ai.numPlayer)) {
                     final int i2 = i + sizePlayerCase;
                     final int p2 = p;
-
                     final Position currentchildrenR = children[i2];
-                    executor.submit(new Runnable() {
-                        @Override
-                        public void run() {
-                            valuesNodes[i2] = Ai.alphaBeta(currentchildrenR, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
-                            latch.countDown();
-                        }
-
+                    executor.submit(() -> {
+                        valuesNodes[i2] = Ai.alphaBeta(currentchildrenR, false, Integer.MIN_VALUE, Integer.MAX_VALUE, 0, p2);
+                        latch.countDown();
                     });
-
-
                 } else {
-
                     valuesNodes[i + sizePlayerCase] = Integer.MIN_VALUE;
                 }
-
-
             }
-
-            latch.await(); // attend la find es calculs 2500,TimeUnit.MILLISECONDS
+            latch.await(); //wait the end of calcul, 2500ms
             long t2 = System.currentTimeMillis();
-            System.out.println("l'ia a recherché avec une profondeur de " + (p + 1 )); //+ " coups parmis " + Ai.nbnode + " noeuds." + " avec " + Ai.nbcut
-            System.out.println("en t = " + (t2 - time) + "ms");
+            System.out.println("deep : " + (p + 1) + ", nodes : " + Ai.nbNode + ", cuts : " + Ai.nbCut + "\n");
+            System.out.println("time : " + (t2 - time) + "ms\n");
             executor.shutdown();
 
-            Ai.nbcut = 0;
+            Ai.nbCut = 0;
 
             System.out.println("VALUES NODES = " + Arrays.toString(valuesNodes) + " first half is blue action and second red over his cases " + Arrays.toString(cases));
+            /*
+            selecting the best to play
+            first half of values nodes are the blue move and second half are the red moves
+            so if idxmax is lower than sizePlayerCase it's a blue mvoe else it's a red move
+            */
             long max = (long) Integer.MIN_VALUE - 2;
             int idxmax = -1;
             for (int i = 0; i < size; i++) {
-                if(i < sizePlayerCase){
+                if (i < sizePlayerCase) {
                     if (valuesNodes[i] > max && (currentPos.coupValideBleu(cases[i % sizePlayerCase], Ai.numPlayer))) {
                         max = valuesNodes[i];
                         idxmax = i;
                     }
-                }
-                else{
+                } else {
                     if (valuesNodes[i] > max && (currentPos.coupValideRouge(cases[i % sizePlayerCase], Ai.numPlayer))) {
                         max = valuesNodes[i];
                         idxmax = i;
                     }
                 }
-
             }
             if (Ai.numPlayer == 1) {
                 if (idxmax >= sizePlayerCase) {
                     holeToStartFrom = case_J1[idxmax - sizePlayerCase] - 1;
-                    colorToPlay = false;
                 }
                 if (idxmax < sizePlayerCase) {
                     holeToStartFrom = case_J1[idxmax] - 1;
@@ -167,17 +144,16 @@ public class Board {
             } else if (Ai.numPlayer == 2) {
                 if (idxmax >= sizePlayerCase) {
                     holeToStartFrom = case_J2[idxmax - sizePlayerCase] - 1;
-                    colorToPlay = false;
                 }
                 if (idxmax < sizePlayerCase) {
                     holeToStartFrom = case_J2[idxmax] - 1;
                     colorToPlay = true;
                 }
-
             }
             String s = colorToPlay ? "blue" : "red";
-            System.out.println("l'ia joue " + (holeToStartFrom + 1) + " " + s);
-        } else {// choix du trou de l'opposant
+            System.out.println("AI plays " + (holeToStartFrom + 1) + " " + s);
+
+        } else { // Here the human player select the hole he wants to play
             Position currentPos = this.getActualPosition();
             int num = iaJ1 ? 2 : 1;
             int[] cases = num == 1 ? case_J1 : case_J2;
@@ -187,45 +163,35 @@ public class Board {
                     result += tableauBleu[i] + tableauRouge[i];
                     tableauBleu[i] = 0;
                     tableauRouge[i] = 0;
-
                 }
                 addPionsPrisOrdi(result);
-
-
                 return;
-
             }
-
-
             Scanner sc = new Scanner(System.in);
             boolean validInput = false;
-            int i = -1;
+            int i;
             while (!validInput) {
                 System.out.println("player choose a hole ?");
                 String str = sc.nextLine();
                 String[] entry = str.split(" ");
-                if (entry.length < 2 || entry.length > 3) { // Si taille entrée non valide on boucle
+                if (entry.length < 2 || entry.length > 3) { // loop until size of the input is incorrect
                     continue;
                 }
                 try {
                     i = Integer.parseInt(entry[0]);
-                } catch (Exception e) { // on boucle si premier param pas un chiffre
+                } catch (Exception e) { // loop until first param isn't a digit
                     continue;
                 }
-
                 if ((i >= 1 && i <= 16) && (entry[1].equalsIgnoreCase("b") || entry[1].equalsIgnoreCase("r"))) {
-                    colorToPlay = entry[1].equalsIgnoreCase("b"); // la couleur est un bool
+                    colorToPlay = entry[1].equalsIgnoreCase("b"); //if equals b or B return true
                     int numPlayer;
-                    boolean included = false;
+                    boolean included;
                     if (!iaJ1) {
                         numPlayer = 1;
                         if (colorToPlay) {
-
                             included = this.getActualPosition().coupValideBleu(i, numPlayer);
                         } else {
-
                             included = this.getActualPosition().coupValideRouge(i, numPlayer);
-
                         }
                         if (!included) {
                             continue;
@@ -233,24 +199,20 @@ public class Board {
                     } else {
                         numPlayer = 2;
                         if (colorToPlay) {
-
                             included = this.getActualPosition().coupValideBleu(i, numPlayer);
                         } else {
-
                             included = this.getActualPosition().coupValideRouge(i, numPlayer);
-
                         }
                         if (!included) {
                             continue;
                         }
                     }
                     validInput = true;
-
-                    holeToStartFrom = i - 1; // -1 pour respecter les index
+                    holeToStartFrom = i - 1; // inputs are on [1;16] but index are on [0;15]
                 }
             }
-
         }
+        //same mechanism as in getNextPosition but here we play on the actual board not on copies
         int index = holeToStartFrom + 1 >= size ? 0 : holeToStartFrom + 1;
         if (colorToPlay) {
             int nbGraine = tableauBleu[holeToStartFrom];
@@ -301,11 +263,8 @@ public class Board {
         } else {
             addPionsPrisJoueur(seedTaken);
         }
-
-
         iaTurn = !iaTurn;
     }
-
 
     public static int getSize() {
         return size;
@@ -351,7 +310,6 @@ public class Board {
         PionsPrisOrdi += pions;
     }
 
-
     public Ai getAi() {
         return ai;
     }
@@ -360,11 +318,10 @@ public class Board {
         return new Position(tableauBleu, tableauRouge, iaTurn, iaJ1, getPionsPrisJoueur(), getPionsPrisOrdi());
     }
 
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("turn : ").append(Ai.nbturn).append("\n");
+        sb.append("turn : ").append(Ai.nbTurn).append("\n");
         sb.append(" ".repeat(7));
         for (int i = 1; i < size / 2 + 1; i++) {
             sb.append(String.format("%d", i));
@@ -388,6 +345,5 @@ public class Board {
         sb.append("\n");
         return sb.toString();
     }
-
 
 }
